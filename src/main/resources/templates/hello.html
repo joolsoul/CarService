@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <div>
+        <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Sign Out"/>
+        </form>
+    </div>
+    <div>
+        <form method="post" action="">
+            <input type="text" name="name" placeholder="Введите имя">
+            <input type="text" name="surname" placeholder="Введите фамилию">
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+
+    <div>Список пользователей</div>
+    <ul>
+        <th:block th:each="user : ${users}">
+            <li th:utext="${user.id}">..</li>
+            <li th:utext="${user.name}">..</li>
+            <li th:utext="${user.surname}">..</li>
+        </th:block>
+    </ul>
+</body>
+</html>
