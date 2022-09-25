@@ -23,7 +23,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .antMatchers("/", "/registration").permitAll()
+                        .antMatchers("/", "/registration", "/static/**").permitAll()
                         .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .antMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

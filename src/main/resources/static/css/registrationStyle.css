@@ -1,0 +1,98 @@
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+font-size: 15px;
+line-height: 1.5;
+color: #121212;
+
+background-color: rgb(44, 67, 74);
+}
+
+.auth {
+width: 260px;
+background-color: #fff;
+padding: 20px;
+margin: 20px auto;
+border-radius: 5px;
+}
+
+.auth-title {
+    font-size: 20px;
+    color: #472727;
+    text-align: center;
+    margin: 0 0 15px; 
+}
+
+.input {
+    display: inline;
+    padding: 8px 10px;
+    width: 260px;
+    
+    border: 1px solid #472727;
+    border-radius: 5px;
+
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.input:focus {
+    outline: 0;
+
+    border-color: rgb(89, 118, 113);
+    border-width: 2px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    
+    text-align: center;
+}
+
+.select {
+    display: inline;
+    padding: 8px 10px;
+    width: 192px;
+    
+    border: 1px solid #472727;
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.select:focus {
+    outline: 0;
+
+    
+    border-color: rgb(89, 118, 113);
+    border-width: 2px;
+}
+
+ .btn {
+    display: block;
+    font-family: inherit;
+    font-size: 15px;
+    width: 260px;
+    padding: 10px;
+
+    border: 0;
+
+    border-radius: 5px;
+
+    background-color: rgb(142, 182, 167);
+
+    color: #fff;
+
+ }
+
+ .btn:hover,
+ .btn:focus {
+    background-color: rgb(65, 87, 79);
+
+    color: rgb(10, 6, 6);
+    cursor: pointer;
+ }  
+
+ .btn:focus {
+    outline: 0;
+ }  
