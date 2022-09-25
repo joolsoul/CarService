@@ -1,4 +1,4 @@
-package ru.kudinov.securingweb;
+package ru.kudinov.securingwebConfig;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;

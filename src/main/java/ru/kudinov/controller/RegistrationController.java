@@ -1,21 +1,21 @@
 package ru.kudinov.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import ru.kudinov.model.Role;
 import ru.kudinov.model.User;
-import ru.kudinov.repository.UserRepository;
+import ru.kudinov.service.UserService;
 
-import java.util.Collections;
 import java.util.Map;
 
 @Controller
 public class RegistrationController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserService userService;
+
+    public RegistrationController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/registration")
     public String registration() {
@@ -25,14 +25,10 @@ public class RegistrationController {
     @PostMapping("/registration")
     public String addUser(User user, Map<String, Object> model) {
 
-        User userFromDb = userRepository.findByLogin(user.getLogin());
-
-        if(userFromDb != null) {
-            model.put("message", "User exists!");
+        if (!userService.saveUser(user)){
+            model.put("message", "Пользователь с таким именем уже существует");
             return "registration";
         }
-        user.setRoles(Collections.singleton(Role.USER));
-        userRepository.save(user);
 
         return "redirect:/login";
     }
