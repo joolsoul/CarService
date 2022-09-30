@@ -74,6 +74,7 @@ border-radius: 5px;
     font-size: 15px;
     width: 260px;
     padding: 10px;
+     margin-bottom: 15px;
 
     border: 0;
 
@@ -82,7 +83,6 @@ border-radius: 5px;
     background-color: rgb(142, 182, 167);
 
     color: #fff;
-
  }
 
  .btn:hover,
@@ -95,4 +95,38 @@ border-radius: 5px;
 
  .btn:focus {
     outline: 0;
- }  
+ }
+
+ .link {
+     text-align: center;
+
+     box-sizing: border-box;
+     text-decoration: none;
+     display: block;
+     font-family: inherit;
+     font-size: 15px;
+     width: 260px;
+     height: 37px;
+     padding: 7px;
+     margin-bottom: 15px;
+
+     border: 0;
+
+     border-radius: 5px;
+
+     background-color: rgb(142, 182, 167);
+
+     color: #fff;
+ }
+
+.link:hover,
+.link:focus {
+    background-color: rgb(65, 87, 79);
+
+    color: rgb(10, 6, 6);
+    cursor: pointer;
+}
+
+.link:focus {
+    outline: 0;
+}

@@ -10,27 +10,28 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2B, 15);
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests()
+                        .antMatchers("/user/**").hasAnyAuthority("ADMIN", "USER")
+                        .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
                         .antMatchers("/", "/registration", "/static/**").permitAll()
-                        .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                        .antMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                )
+                .and()
 
                 .formLogin((form) -> form
                         .loginPage("/login")
+                        .defaultSuccessUrl("/hello")
                         .permitAll()
                 )
                 .logout(LogoutConfigurer::permitAll);

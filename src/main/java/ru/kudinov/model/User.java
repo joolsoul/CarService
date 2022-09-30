@@ -35,7 +35,6 @@ public class User implements UserDetails {
     @Nullable
     private String email;
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
@@ -134,5 +133,10 @@ public class User implements UserDetails {
 
     public void setEmail(@Nullable String email) {
         this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return getUsername();
     }
 }

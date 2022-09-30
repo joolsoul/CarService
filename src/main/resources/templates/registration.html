@@ -1,4 +1,6 @@
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +10,10 @@
 </head>
 <body>
     <div class="auth">
+        <div th:text="${message}">
+            {
+        </div>
+
         <h1 class="auth-title">Регистрация</h1>
 
         <form action="/registration" method="post">
@@ -42,7 +48,7 @@
             </div>
 
             <div class="form-group">
-                <input class="input" type="password" name="password_confirm"
+                <input class="input" type="password" name="passwordConfirm"
                 placeholder="Подтвердите пароль">
             </div>
 
@@ -52,6 +58,7 @@
             </div>
 
             <button class="btn" type="submit">Зарегистрироваться</button>
+            <a class="link" href="/login">Войти</a>
 
             <!--CSRF Token-->
             <input

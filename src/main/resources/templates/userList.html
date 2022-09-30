@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Пользователи</title>
+</head>
+<body>
+    <table>
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+          <th:block th:each="user : ${users}">
+              <tr>
+                  <td th:text="${user.username}">.</td>
+                  <td th:each="role : ${user.roles}" th:text="${role}">.</td>
+                  <td><a href="/admin/user/" th:attrappend="href=${user.id}">Редактировать</a></td>
+              </tr>
+          </th:block>
+      </tbody>
+    </table>
+</body>
+</html>
