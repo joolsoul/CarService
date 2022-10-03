@@ -1,5 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,38 +18,38 @@
 
         <form action="/registration" method="post">
             <div class="form-group">
-                <input class="input" type="text" name="surname"
-                placeholder="Ваша фамилия">
+                <input th:value="${user?.surname}" class="input" type="text" name="surname"
+                       placeholder="Ваша фамилия">
             </div>
 
             <div class="form-group">
-                <input class="input" type="text" name="name"
+                <input th:value="${user?.name}" class="input" type="text" name="name"
                        placeholder="Ваше имя">
             </div>
 
             <div class="form-group">
-                <input class="input" type="text" name="patronymic"
+                <input th:value="${user?.patronymic}" class="input" type="text" name="patronymic"
                        placeholder="Ваше отчество">
             </div>
 
             <div class="form-group">
-                <input class="input" type="tel" name="phoneNumber"
-                placeholder="Ваш номер телефона">
+                <input th:value="${user?.phoneNumber}" class="input" type="tel" name="phoneNumber"
+                       placeholder="Ваш номер телефона">
             </div>
 
             <div class="form-group">
-                <input class="input" type="text" name="username"
+                <input th:value="${user?.username}" class="input" type="text" name="username"
                        placeholder="Придуамйте логин">
             </div>
 
             <div class="form-group">
-                <input class="input" type="password" name="password"
-                placeholder="Придумайте пароль">
+                <input th:value="${user?.password}" class="input" type="password" name="password"
+                       placeholder="Придумайте пароль">
             </div>
 
             <div class="form-group">
-                <input class="input" type="password" name="passwordConfirm"
-                placeholder="Подтвердите пароль">
+                <input th:value="${passwordConfirm}" class="input" type="password" name="passwordConfirm"
+                       placeholder="Подтвердите пароль">
             </div>
 
             <div class="form-group">

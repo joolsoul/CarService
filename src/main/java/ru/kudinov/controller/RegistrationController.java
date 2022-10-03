@@ -5,10 +5,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.kudinov.model.User;
 import ru.kudinov.service.UserService;
-
-import java.util.Map;
 
 @Controller
 public class RegistrationController {
@@ -20,13 +19,18 @@ public class RegistrationController {
     }
 
     @GetMapping("/registration")
-    public String registration() {
+    public String registration(Model model) {
+
         return "registration";
     }
 
     @PostMapping("/registration")
     public String addUser(User user, Model model,
-                          @RequestParam(name = "passwordConfirm") String passwordConfirm) {
+                          @RequestParam(name = "passwordConfirm") String passwordConfirm,
+                          RedirectAttributes redirectAttributes) {
+
+
+        model.addAttribute("passwordConfirm", passwordConfirm);
 
         if (!userService.isUserCorrectly(user)) {
             model.addAttribute("message", "Введены некорректные данные");
@@ -38,13 +42,14 @@ public class RegistrationController {
             return "registration";
         }
 
-        if (!userService.saveUser(user)){
+        if (!userService.saveUser(user)) {
             model.addAttribute("message", "Пользователь с таким именем уже существует");
             return "registration";
         }
 
+        redirectAttributes.addFlashAttribute("username", user.getUsername());
+        redirectAttributes.addFlashAttribute("password", user.getUsername());
 
-
-        return "redirect:/login";
+        return "redirect:login";
     }
 }

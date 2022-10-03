@@ -1,5 +1,5 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+>
 <head>
     <link rel="stylesheet" type="text/css" media="all"  href="./static/css/registrationStyle.css"/>
   <title>Вход</title>
@@ -8,19 +8,19 @@
     <div class="auth">
 
         <div th:if="${param.error}">
-            Invalid username and password.
+            Неверное имя пользователя или пароль
         </div>
 
         <h1 class="auth-title">Вход</h1>
 
         <form action="/login" method="post">
             <div class="form-group">
-                <input class="input" type="text" name="username"
+                <input th:value="${username}" class="input" type="text" name="username"
                        placeholder="Введите логин">
             </div>
 
             <div class="form-group">
-                <input class="input" type="password" name="password"
+                <input th:value="${password}" class="input" type="password" name="password"
                        placeholder="Введите пароль">
             </div>
             <!--CSRF Token-->

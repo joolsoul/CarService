@@ -13,13 +13,17 @@
 
 <div>
     <form method="post" action="">
-        <input type="text" name="registrationNumber" placeholder="Введите регистрационый номер автомобиля">
-        <input type="text" name="carBrand" placeholder="Введите марку автомобиля">
+        <div th:text="${message}">
+            {
+        </div>
+        <input th:value="${carToAdd?.registrationNumber}" type="text" name="registrationNumber"
+               placeholder="Введите регистрационый номер автомобиля">
+        <input th:value="${carToAdd?.carBrand}" type="text" name="carBrand" placeholder="Введите марку автомобиля">
         <!--CSRF Token-->
         <input
                 type="hidden"
                 th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}" />
+                th:value="${_csrf.token}"/>
         <button type="submit">Добавить</button>
         <a href=""></a>
     </form>

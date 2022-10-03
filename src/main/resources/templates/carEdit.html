@@ -7,15 +7,19 @@
 <body>
 <h1 class="auth-title">Редактирование</h1>
 
-<form action="" method="post">
-  <div class="form-group">
-    <input class="input" type="text" name="registrationNumber"
-           placeholder="Редактировать регистрационный номер" th:value="${car.registrationNumber}">
-  </div>
+<div th:text="${message}">
+    {
+</div>
 
-  <div class="form-group">
-    <input class="input" type="text" name="carBrand"
-           placeholder="Редактировать марку" th:value="${car.carBrand}">
+<form action="" method="post">
+    <div class="form-group">
+        <input class="input" type="text" name="registrationNumber"
+               placeholder="Редактировать регистрационный номер" th:value="${car.registrationNumber}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="text" name="carBrand"
+               placeholder="Редактировать марку" th:value="${car.carBrand}">
   </div>
 
   <button class="btn" type="submit">Редактировать</button>
