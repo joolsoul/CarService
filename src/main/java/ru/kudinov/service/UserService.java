@@ -5,8 +5,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.kudinov.model.Role;
 import ru.kudinov.model.User;
+import ru.kudinov.model.enums.Role;
 import ru.kudinov.repository.UserRepository;
 
 import java.util.Collections;

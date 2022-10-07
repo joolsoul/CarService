@@ -60,4 +60,12 @@ public class DetailRequest {
     public void setPrice(Double price) {
         this.price = price;
     }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
+    }
 }

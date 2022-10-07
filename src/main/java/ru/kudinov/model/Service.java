@@ -1,9 +1,8 @@
 package ru.kudinov.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import ru.kudinov.model.enums.ServiceType;
+
+import javax.persistence.*;
 
 @Entity
 public class Service {
@@ -15,6 +14,9 @@ public class Service {
     private String name;
 
     private Double price;
+
+    @Enumerated(EnumType.STRING)
+    private ServiceType serviceType;
 
     public Long getId() {
         return id;
@@ -38,5 +40,13 @@ public class Service {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public ServiceType getServiceType() {
+        return serviceType;
+    }
+
+    public void setServiceType(ServiceType serviceType) {
+        this.serviceType = serviceType;
     }
 }

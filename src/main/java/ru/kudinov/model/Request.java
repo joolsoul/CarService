@@ -1,5 +1,7 @@
 package ru.kudinov.model;
 
+import ru.kudinov.model.enums.RequestStatus;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -23,6 +25,9 @@ public class Request {
     private Date orderDate;
 
     private Double cost;
+
+    @Enumerated(EnumType.STRING)
+    private RequestStatus requestStatus;
 
     public Long getId() {
         return id;
@@ -62,5 +67,21 @@ public class Request {
 
     public void setCost(Double cost) {
         this.cost = cost;
+    }
+
+    public CarService getCarService() {
+        return carService;
+    }
+
+    public void setCarService(CarService carService) {
+        this.carService = carService;
+    }
+
+    public RequestStatus getRequestStatus() {
+        return requestStatus;
+    }
+
+    public void setRequestStatus(RequestStatus requestStatus) {
+        this.requestStatus = requestStatus;
     }
 }

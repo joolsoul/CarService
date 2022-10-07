@@ -1,4 +1,4 @@
-package ru.kudinov.model;
+package ru.kudinov.model.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 

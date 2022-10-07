@@ -1,9 +1,8 @@
 package ru.kudinov.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import ru.kudinov.model.enums.DetailType;
+
+import javax.persistence.*;
 
 @Entity
 public class Detail {
@@ -17,6 +16,11 @@ public class Detail {
     private Integer quantity;
 
     private Double price;
+
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private DetailType detailType;
 
     public Long getId() {
         return id;
@@ -48,5 +52,21 @@ public class Detail {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public DetailType getDetailType() {
+        return detailType;
+    }
+
+    public void setDetailType(DetailType detailType) {
+        this.detailType = detailType;
     }
 }

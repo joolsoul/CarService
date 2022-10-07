@@ -3,6 +3,7 @@ package ru.kudinov.model;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.kudinov.model.enums.Role;
 
 import javax.persistence.*;
 import java.util.Collection;

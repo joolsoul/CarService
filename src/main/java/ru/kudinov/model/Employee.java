@@ -1,7 +1,10 @@
 package ru.kudinov.model;
 
+import ru.kudinov.model.enums.Post;
+import ru.kudinov.model.enums.WorkSchedule;
+
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 public class Employee {
@@ -19,12 +22,15 @@ public class Employee {
 
     private String address;
 
+    @Temporal(TemporalType.DATE)
     private Date birthdate;
 
+    @Enumerated(EnumType.STRING)
     private Post post; //должность
 
     private Integer workExperience; //in Days
 
+    @Enumerated(EnumType.STRING)
     private WorkSchedule workSchedule;  //график работы
 
     private Integer salary; // оклад
@@ -135,5 +141,9 @@ public class Employee {
 
     public void setWages(Integer wages) {
         this.wages = wages;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
