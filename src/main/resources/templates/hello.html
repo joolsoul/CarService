@@ -5,12 +5,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-    <div>
-        <form th:action="@{/logout}" method="post">
-            <input type="submit" value="Sign Out"/>
-        </form>
-    </div>
+<div>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
+</div>
 
-    <a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+<div><a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a></div>
+<div><a href="/service">Услуги</a></div>
+<div><a href="/shop">Магазин</a></div>
 </body>
 </html>

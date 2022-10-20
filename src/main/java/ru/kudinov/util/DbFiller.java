@@ -1,10 +1,8 @@
-package ru.kudinov.model.util;
+package ru.kudinov.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.kudinov.model.User;
-import ru.kudinov.repository.UserRepository;
 import ru.kudinov.service.UserService;
 
 import java.io.IOException;

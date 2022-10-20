@@ -19,7 +19,7 @@ public class RegistrationController {
     }
 
     @GetMapping("/registration")
-    public String registration(Model model) {
+    public String getRegistrationPage(Model model) {
 
         return "registration";
     }

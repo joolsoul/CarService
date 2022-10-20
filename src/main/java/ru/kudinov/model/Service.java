@@ -5,7 +5,7 @@ import ru.kudinov.model.enums.ServiceType;
 import javax.persistence.*;
 
 @Entity
-public class Service {
+public class Service implements Producible {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

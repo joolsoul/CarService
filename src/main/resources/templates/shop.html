@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<div>Магазин</div>
+<div><a href="/hello">Главная</a></div>
+
+<ul>
+    <th:block th:each="detailType : ${detailTypes}">
+
+        <a href="/shop?filterDetailType=" th:attrappend="href=${detailType}"
+           th:text="${detailType.value}">NULL</a>
+    </th:block>
+</ul>
+<a href="/shop">Сбросить фильтры</a>
+<ul>
+    <th:block th:each="detailsElement : ${details}">
+
+        <ul>
+            <th:block th:each="detail : ${detailsElement.value}">
+
+                <li th:utext="${detail?.name}">..</li>
+                <li th:utext="'Количество: ' + ${detail?.quantity}">..</li>
+                <li th:utext="${detail?.price}">..</li>
+                <li th:utext="${detail?.description}">..</li>
+                <li th:utext="${detailsElement?.key}">..</li>
+                <li th:utext="${detail?.id}">..</li>
+                <a href="/shop/" th:attrappend="href=${detail?.id}">В корзину</a>
+
+            </th:block>
+        </ul>
+
+    </th:block>
+</ul>
+</body>
+</html>

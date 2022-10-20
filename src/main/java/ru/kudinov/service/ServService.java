@@ -8,11 +8,11 @@ import ru.kudinov.repository.ServiceRepository;
 import java.util.List;
 
 @Service
-public class ServiceService {
+public class ServService {
 
     private final ServiceRepository serviceRepository;
 
-    public ServiceService(ServiceRepository serviceRepository) {
+    public ServService(ServiceRepository serviceRepository) {
         this.serviceRepository = serviceRepository;
     }
 

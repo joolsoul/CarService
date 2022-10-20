@@ -39,14 +39,6 @@ public class ServiceRequest {
         this.service = service;
     }
 
-    public Request getOrder() {
-        return request;
-    }
-
-    public void setOrder(Request request) {
-        this.request = request;
-    }
-
     public Employee getEmployee() {
         return employee;
     }

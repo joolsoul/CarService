@@ -5,7 +5,7 @@ import ru.kudinov.model.enums.DetailType;
 import javax.persistence.*;
 
 @Entity
-public class Detail {
+public class Detail implements Producible {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

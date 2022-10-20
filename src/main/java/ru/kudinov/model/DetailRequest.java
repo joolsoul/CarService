@@ -11,7 +11,7 @@ public class DetailRequest {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "detail_id")
-    private Detail service;
+    private Detail detail;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "request_id")
@@ -29,20 +29,12 @@ public class DetailRequest {
         this.id = id;
     }
 
-    public Detail getService() {
-        return service;
+    public Detail getDetail() {
+        return detail;
     }
 
-    public void setService(Detail service) {
-        this.service = service;
-    }
-
-    public Request getOrder() {
-        return request;
-    }
-
-    public void setOrder(Request request) {
-        this.request = request;
+    public void setDetail(Detail detail) {
+        this.detail = detail;
     }
 
     public Integer getQuantity() {

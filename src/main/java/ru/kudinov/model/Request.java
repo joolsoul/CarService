@@ -14,6 +14,10 @@ public class Request {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "car_id")
     private Car car;
 
@@ -83,5 +87,13 @@ public class Request {
 
     public void setRequestStatus(RequestStatus requestStatus) {
         this.requestStatus = requestStatus;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

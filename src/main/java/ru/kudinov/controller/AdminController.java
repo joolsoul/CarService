@@ -3,6 +3,7 @@ package ru.kudinov.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kudinov.service.UserService;
 
@@ -17,9 +18,9 @@ public class AdminController {
     }
 
     @GetMapping
-    public String userList(Model model) {
+    public String getUserListPage(Model model) {
 
-        model.addAttribute( "users", userService.allUsers());
+        model.addAttribute("users", userService.allUsers());
 
         return "userList";
     }
@@ -28,7 +29,7 @@ public class AdminController {
     //TODO: Сделать отображения информации о конкретном пользователе, основываясь на pathVariable
     //TODO: редактирование машин, информации о пользователе и его прав
     @GetMapping("/user/{user}")
-    public String user(Model model) {
+    public String getUserPage(Model model, @PathVariable String user) {
         return "index";
     }
 

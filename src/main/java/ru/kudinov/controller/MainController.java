@@ -8,15 +8,15 @@ import ru.kudinov.model.User;
 import ru.kudinov.service.UserService;
 
 @Controller
-public class GreetingController {
+public class MainController {
     UserService userService;
 
-    public GreetingController(UserService userService) {
+    public MainController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping("/hello")
-    public String greeting(Model model,@AuthenticationPrincipal User user) {
+    public String greeting(Model model, @AuthenticationPrincipal User user) {
 
         model.addAttribute("user", user);
 

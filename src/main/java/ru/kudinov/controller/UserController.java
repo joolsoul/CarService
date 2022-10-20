@@ -26,7 +26,8 @@ public class UserController {
     }
 
     @GetMapping("{user}")
-    public String userList(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
+    public String getPersonalAccount(Model model, @AuthenticationPrincipal User authUser,
+                                     @PathVariable(required = false) User user) {
 
         if (user == null || !user.getId().equals(authUser.getId())) {
             return "redirect:" + authUser.getId();
@@ -50,6 +51,7 @@ public class UserController {
         }
 
         car.setOwner(authUser);
+        car.setRegistrationNumber(car.getRegistrationNumber().toUpperCase());
 
         if (!carService.isCarDataCorrectly(car)) {
             redirectAttributes.addFlashAttribute("message", "Некорректный регистрационный номер автомобиля");
@@ -79,8 +81,8 @@ public class UserController {
     }
 
     @GetMapping("editCar/{car}")
-    public String editCar(Model model, @PathVariable(required = false) Car car,
-                          @AuthenticationPrincipal User user) {
+    public String getCarEditPage(Model model, @PathVariable(required = false) Car car,
+                                 @AuthenticationPrincipal User user) {
 
         if (car == null || !carService.findByOwner(user).contains(car)) {
             model.addAttribute("message", "У Вас нет доступа к данному автомобилю");
@@ -96,8 +98,8 @@ public class UserController {
     }
 
     @PostMapping("editCar/{car}")
-    public String changeCar(Model model, @ModelAttribute Car carToChange,
-                            @AuthenticationPrincipal User user) {
+    public String editCar(Model model, @ModelAttribute Car carToChange,
+                          @AuthenticationPrincipal User user) {
 
         model.addAttribute("car", carToChange);
         model.addAttribute("user", user);
@@ -118,7 +120,7 @@ public class UserController {
     }
 
     @GetMapping("{user}-changePassword")
-    public String changePassword(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
+    public String getChangePasswordPage(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
 
         if (user == null || !user.getId().equals(authUser.getId())) {
             return "redirect:" + authUser.getId() + "-changePassword";
@@ -130,11 +132,11 @@ public class UserController {
     }
 
     @PostMapping("{user}-changePassword")
-    public String savePassword(Model model, @AuthenticationPrincipal User authUser,
-                               @RequestParam(name = "oldPassword") String oldPassword,
-                               @RequestParam(name = "newPassword") String newPassword,
-                               @RequestParam(name = "passwordConfirm") String passwordConfirm,
-                               @PathVariable(required = false) User user) {
+    public String changePassword(Model model, @AuthenticationPrincipal User authUser,
+                                 @RequestParam(name = "oldPassword") String oldPassword,
+                                 @RequestParam(name = "newPassword") String newPassword,
+                                 @RequestParam(name = "passwordConfirm") String passwordConfirm,
+                                 @PathVariable(required = false) User user) {
 
         model.addAttribute("user", authUser);
 
@@ -166,7 +168,7 @@ public class UserController {
     }
 
     @GetMapping("{user}-changeLogin")
-    public String changeLogin(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
+    public String getChangeLoginPage(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
 
         if (user == null || !user.getId().equals(authUser.getId())) {
             return "redirect:" + authUser.getId() + "-changeLogin";
@@ -178,9 +180,9 @@ public class UserController {
     }
 
     @PostMapping("{user}-changeLogin")
-    public String saveLogin(Model model, @AuthenticationPrincipal User authUser,
-                            @RequestParam(name = "newLogin") String newLogin,
-                            @PathVariable(required = false) User user) {
+    public String changeLogin(Model model, @AuthenticationPrincipal User authUser,
+                              @RequestParam(name = "newLogin") String newLogin,
+                              @PathVariable(required = false) User user) {
 
         model.addAttribute("user", authUser);
 
@@ -203,7 +205,7 @@ public class UserController {
     }
 
     @GetMapping("{user}-edit")
-    public String editUser(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
+    public String getUserEditPage(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
 
         if (user == null || !user.getId().equals(authUser.getId())) {
             return "redirect:" + authUser.getId() + "-edit";
@@ -215,7 +217,7 @@ public class UserController {
 
     //TODO добавление почты
     @PostMapping("{user}-edit")
-    public String saveUser(Model model, @AuthenticationPrincipal User user,
+    public String editUser(Model model, @AuthenticationPrincipal User user,
                            @ModelAttribute User changeUser) {
 
         model.addAttribute("user", changeUser);
