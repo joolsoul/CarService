@@ -5,6 +5,8 @@ import ru.kudinov.model.Request;
 import ru.kudinov.model.ServiceRequest;
 import ru.kudinov.repository.ServiceRequestRepository;
 
+import java.util.List;
+
 @Service
 public class ServRequestService {
 
@@ -20,5 +22,9 @@ public class ServRequestService {
 
     public ServiceRequest getServiceRequest(ru.kudinov.model.Service service, Request request) {
         return serviceRequestRepository.findByRequestAndService(request, service);
+    }
+
+    public List<ServiceRequest> getServiceRequestsByRequest(Request request) {
+        return serviceRequestRepository.findByRequest(request);
     }
 }

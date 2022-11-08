@@ -130,3 +130,36 @@ border-radius: 5px;
 .link:focus {
     outline: 0;
 }
+
+/* SHOP */
+
+.count {
+    display: flex;
+}
+
+.count .change {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #35e201;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.count input {
+    max-width: 55px;
+    text-align: center;
+    font-weight: 700;
+    background-color: #fff;
+    border: none;
+    border-radius: 3px;
+    margin: 0 5px;
+}
+
+.count .minus.min {
+    background-color: #989797;
+}

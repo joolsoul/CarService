@@ -3,7 +3,6 @@ package ru.kudinov.controller;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,11 +53,10 @@ public class ServiceController {
 
     @GetMapping("{service}")
     public String signUpService(@PathVariable Service service, @AuthenticationPrincipal User authUser,
-                                HttpServletResponse response,
-                                @CookieValue(value = "serviceCount", required = false) String serviceCount) {
+                                HttpServletResponse response) {
 
         if (authUser == null) {
-            CookiesUtil.createCookies(service, "service", response, serviceCount);
+            CookiesUtil.createServiceCookie(service, response);
         } else {
             Request request = requestService.getRequest(authUser);
 

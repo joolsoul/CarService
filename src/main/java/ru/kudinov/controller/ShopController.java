@@ -60,30 +60,33 @@ public class ShopController {
         return "shop";
     }
 
-    @GetMapping("{detail}")
-    public String signUpDetail(@PathVariable Detail detail, @AuthenticationPrincipal User authUser,
+    @PostMapping("{detail}")
+    public String signUpDetail(@PathVariable Detail detail, @ModelAttribute(name = "detailQuantity") int detailQuantity,
+                               @AuthenticationPrincipal User authUser,
                                HttpServletResponse httpResponse,
-                               @CookieValue(value = "detailCount", required = false) String detailCount,
                                HttpServletRequest httpRequest) {
 
         if (authUser == null) {
-            CookiesUtil.createCookies(detail, "detail", httpResponse, detailCount);
+            CookiesUtil.createDetailCookie(detail, detailQuantity, httpResponse, httpRequest);
         } else {
             Request request = requestService.getRequest(authUser);
 
             DetailRequest detailRequest = detailRequestService.getDetailRequest(detail, request);
             if (detailRequest != null) {
-                //TODO: сделать выбор количества
-                detailRequest.setQuantity(detailRequest.getQuantity() + 1);
-                detailRequest.setPrice(detailRequest.getPrice() + detail.getPrice());
+                if (detailRequest.getQuantity() + detailQuantity <= detail.getQuantity()) {
+                    detailRequest.setQuantity(detailRequest.getQuantity() + detailQuantity);
+                    detailRequest.setPrice(detailRequest.getPrice() + detail.getPrice() * detailQuantity);
+                } else {
+                    detailRequest.setQuantity(detail.getQuantity());
+                    detailRequest.setPrice(detailRequest.getPrice() + detail.getPrice() * (detail.getQuantity() - detailRequest.getQuantity()));
+                }
             } else {
-
                 detailRequest = new DetailRequest();
                 detailRequest.setDetail(detail);
                 detailRequest.setPrice(detail.getPrice());
                 detailRequest.setRequest(request);
-                //TODO: сделать выбор количества
-                detailRequest.setQuantity(1);
+                if (detailQuantity <= detail.getQuantity()) detailRequest.setQuantity(detailQuantity);
+                else detailRequest.setQuantity(detail.getQuantity());
             }
 
             detailRequestService.saveDetailRequest(detailRequest);

@@ -1,9 +1,12 @@
 package ru.kudinov.model;
 
+import ru.kudinov.model.interfaces.ProducibleRequest;
+import ru.kudinov.model.interfaces.Product;
+
 import javax.persistence.*;
 
 @Entity
-public class DetailRequest {
+public class DetailRequest implements ProducibleRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -60,4 +63,16 @@ public class DetailRequest {
     public void setRequest(Request request) {
         this.request = request;
     }
+
+    @Override
+    public Product getProduct() {
+        return getDetail();
+    }
+
+    @Override
+    public void setProduct(Product product) {
+        setDetail((Detail) product);
+    }
+
+
 }

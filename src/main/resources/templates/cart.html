@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<div><a href="/">Главная</a></div>
+
+<div th:if="${cartProductCounter} != 0">
+    <form action="" method="post">
+
+        <div th:if="${request?.id}" th:text="'Заказ №'+ ${request?.id}">.</div>
+
+        <div th:if="${not #lists.isEmpty(detailRequests)}">
+            <h1>Запчасти</h1>
+
+            <th:block th:each="detailRequest : ${detailRequests}">
+                <p th:utext="${detailRequest?.detail?.name}">..</p>
+                <p th:utext="${detailRequest?.quantity}">..</p>
+                <p th:utext="${detailRequest?.price}">..</p>
+                <a href="/cart/deleteDetailRequest" th:attrappend="href=${detailRequest?.detail?.id}">Удалить деталь</a>
+                <p>-------------------</p>
+            </th:block>
+
+        </div>
+
+        <div>**************************************</div>
+
+        <div th:if="${not #lists.isEmpty(serviceRequests)}">
+            <h1>Услуги</h1>
+
+            <th:block th:each="serviceRequest : ${serviceRequests}">
+                <p th:utext="${serviceRequest?.service?.name}">..</p>
+                <p th:utext="${serviceRequest?.price}">..</p>
+
+                <select name="selectEmployee">
+                    <option th:each="employee : ${employees}"
+                            th:value="${employee?.id}"
+                            th:text="${employee?.name} + ' ' + ${employee?.patronymic} + ' ' + ${employee?.surname}">
+                    </option>
+                </select>
+
+                <a href="/cart/deleteServiceRequest" th:attrappend="href=${serviceRequest?.service?.id}">Удалить
+                    услугу</a>
+                <p>------------------</p>
+            </th:block>
+        </div>
+
+        <div>**************************************</div>
+
+        <div th:if="${not #lists.isEmpty(serviceRequests)} or ${not #lists.isEmpty(detailRequests)}">
+
+            <div th:unless="${user}">Войдите или зарегистрируйтесь для выбора автомобиля</div>
+
+            <div th:if="${user}">
+
+                <select th:if="${not #lists.isEmpty(userCars)}" name="selectCar">
+                    <option th:each="userCar : ${userCars}"
+                            th:value="${userCar?.id}"
+                            th:text="${userCar?.carBrand} + ' ' + ${userCar?.registrationNumber}">
+                    </option>
+                </select>
+
+                <a th:unless="${not #lists.isEmpty(userCars)}" th:href="@{/user/__${user?.id}__}">Добавить
+                    автомобиль</a>
+
+            </div>
+
+            <div>
+                <select th:if="${not #lists.isEmpty(services)}" name="selectServiceOrganization">
+                    <option th:each="service : ${services}"
+                            th:value="${service?.id}"
+                            th:text="${service?.address}">
+                    </option>
+                </select>
+
+            </div>
+
+        </div>
+
+        <div>**************************************</div>
+
+        <div th:text="'Стоимость: ' + __${request?.cost}__"></div>
+
+        <button type="submit">Оформить заказ</button>
+
+    </form>
+</div>
+
+<div th:if="${cartProductCounter} == 0">
+    Ваша корзина пуста
+</div>
+</body>
+</html>

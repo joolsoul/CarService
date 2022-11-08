@@ -1,11 +1,14 @@
 package ru.kudinov.model;
 
 import ru.kudinov.model.enums.DetailType;
+import ru.kudinov.model.enums.ProductKind;
+import ru.kudinov.model.interfaces.Product;
+import ru.kudinov.model.interfaces.ProductType;
 
 import javax.persistence.*;
 
 @Entity
-public class Detail implements Producible {
+public class Detail implements Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -21,6 +24,9 @@ public class Detail implements Producible {
 
     @Enumerated(EnumType.STRING)
     private DetailType detailType;
+
+    @Transient
+    private final ProductKind PRODUCT_KIND = ProductKind.DETAIL;
 
     public Long getId() {
         return id;
@@ -68,5 +74,14 @@ public class Detail implements Producible {
 
     public void setDetailType(DetailType detailType) {
         this.detailType = detailType;
+    }
+
+    public ProductKind getPRODUCT_KIND() {
+        return PRODUCT_KIND;
+    }
+
+    @Override
+    public ProductType getProductType() {
+        return getDetailType();
     }
 }

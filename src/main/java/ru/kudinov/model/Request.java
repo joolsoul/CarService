@@ -21,9 +21,9 @@ public class Request {
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "car_service_id")
-    private CarService carService;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @JoinColumn(name = "service_organization_id")
+    private ServiceOrganization serviceOrganization;
 
     @Temporal(TemporalType.DATE)
     private Date orderDate;
@@ -57,12 +57,12 @@ public class Request {
         this.orderDate = orderDate;
     }
 
-    public CarService getService() {
-        return carService;
+    public ServiceOrganization getService() {
+        return serviceOrganization;
     }
 
-    public void setService(CarService carService) {
-        this.carService = carService;
+    public void setService(ServiceOrganization serviceOrganization) {
+        this.serviceOrganization = serviceOrganization;
     }
 
     public Double getCost() {
@@ -73,12 +73,12 @@ public class Request {
         this.cost = cost;
     }
 
-    public CarService getCarService() {
-        return carService;
+    public ServiceOrganization getCarService() {
+        return serviceOrganization;
     }
 
-    public void setCarService(CarService carService) {
-        this.carService = carService;
+    public void setCarService(ServiceOrganization serviceOrganization) {
+        this.serviceOrganization = serviceOrganization;
     }
 
     public RequestStatus getRequestStatus() {

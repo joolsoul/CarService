@@ -1,6 +1,8 @@
 package ru.kudinov.model.enums;
 
-public enum ServiceType {
+import ru.kudinov.model.interfaces.ProductType;
+
+public enum ServiceType implements ProductType {
     DIAGNOSTICS("Диагностика"),
     MAINTENANCE("Обслуживание"),
     REPAIR("Ремонт");

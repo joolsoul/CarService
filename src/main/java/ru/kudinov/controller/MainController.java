@@ -5,21 +5,26 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.kudinov.model.User;
-import ru.kudinov.service.UserService;
+import ru.kudinov.util.CartUtil;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class MainController {
-    UserService userService;
 
-    public MainController(UserService userService) {
-        this.userService = userService;
+    private final CartUtil cartUtil;
+
+    public MainController(CartUtil cartUtil) {
+        this.cartUtil = cartUtil;
     }
 
-    @GetMapping("/hello")
-    public String greeting(Model model, @AuthenticationPrincipal User user) {
+    @GetMapping("/")
+    public String greeting(Model model, @AuthenticationPrincipal User user,
+                           HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
-        model.addAttribute("user", user);
+        cartUtil.createUserCart(model, user, httpRequest, httpResponse);
 
-        return "hello";
+        return "index";
     }
 }

@@ -1,10 +1,20 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Start page</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
-<p>Go to account<a href="/hello"> here</a></p>
+<div>
+    <form th:if="${user}" th:action="@{/logout}" method="post">
+        <input type="submit" value="Выход"/>
+    </form>
+</div>
+
+<div><a th:if="${user}" href="/user/" th:attrappend="href=${user?.id}">Личный кабинет</a></div>
+<div><a th:unless="${user}" href="/login">Войти/Зарегистрироваться</a></div>
+<div><a href="/service">Услуги</a></div>
+<div><a href="/shop">Магазин</a></div>
+<div><a href="/cart" th:text="'Корзина '  + ${cartProductCounter}">Корзина</a></div>
 </body>
 </html>

@@ -33,7 +33,6 @@ public class User implements UserDetails {
 
     private String phoneNumber;
 
-    @Nullable
     private String email;
 
     @Override
@@ -127,7 +126,6 @@ public class User implements UserDetails {
         this.phoneNumber = phoneNumber;
     }
 
-    @Nullable
     public String getEmail() {
         return email;
     }

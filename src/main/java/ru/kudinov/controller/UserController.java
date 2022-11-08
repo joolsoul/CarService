@@ -41,14 +41,10 @@ public class UserController {
         return "personalAccount";
     }
 
-    @PostMapping("{user}")
+    @PostMapping("addCar")
     public String addCar(@ModelAttribute Car car,
                          @AuthenticationPrincipal User authUser,
-                         RedirectAttributes redirectAttributes, @PathVariable(required = false) User user) {
-
-        if (user == null || !user.getId().equals(authUser.getId())) {
-            return "redirect:" + authUser.getId();
-        }
+                         RedirectAttributes redirectAttributes) {
 
         car.setOwner(authUser);
         car.setRegistrationNumber(car.getRegistrationNumber().toUpperCase());
@@ -56,16 +52,16 @@ public class UserController {
         if (!carService.isCarDataCorrectly(car)) {
             redirectAttributes.addFlashAttribute("message", "Некорректный регистрационный номер автомобиля");
             redirectAttributes.addFlashAttribute("carToAdd", car);
-            return "redirect:{user}";
+            return "redirect:" + authUser.getId();
         }
         if (!carService.saveCar(car)) {
             redirectAttributes.addFlashAttribute("message", "Автомобиль с данным регистрационым номером уже добавлен");
             redirectAttributes.addFlashAttribute("carToAdd", car);
-            return "redirect:{user}";
+            return "redirect:" + authUser.getId();
         }
 
         redirectAttributes.addFlashAttribute("message", "Автомобиль успешно добавлен");
-        return "redirect:{user}";
+        return "redirect:" + authUser.getId();
     }
 
     @GetMapping("deleteCar/{car}")
@@ -75,7 +71,7 @@ public class UserController {
 
         if (!carService.deleteCar(car)) {
             redirectAttributes.addFlashAttribute("message", "Неизвестная ошибка");
-        }
+        } else redirectAttributes.addFlashAttribute("message", "Машина успешно удалена");
 
         return "redirect:/user/" + user.getId();
     }

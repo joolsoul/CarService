@@ -1,2 +1,4 @@
 # Project exclude paths
 /target/
+src/main/resources/static/node_modules/**/*.*
+/.idea

@@ -5,14 +5,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<div>
-    <form th:action="@{/logout}" method="post">
-        <input type="submit" value="Sign Out"/>
-    </form>
-</div>
+<a href="/">Главная</a>
 
 <div>
-    <form method="post" action="">
+    <form method="post" action="addCar">
         <div th:text="${message}">
             {
         </div>

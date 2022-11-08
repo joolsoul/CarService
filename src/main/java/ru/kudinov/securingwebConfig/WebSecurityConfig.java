@@ -27,13 +27,13 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers("/user/**").hasAnyAuthority("ADMIN", "USER")
                 .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
-                .antMatchers("/", "/service/**", "/registration", "/static/**").permitAll()
+                .antMatchers("/", "/service/**", "/shop/**", "/cart/**", "/registration", "/static/**").permitAll()
                         .anyRequest().authenticated()
                 .and()
 
                 .formLogin((form) -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/hello")
+                        .defaultSuccessUrl("/")
                         .permitAll()
                 )
                 .logout(LogoutConfigurer::permitAll);

@@ -1,9 +1,12 @@
 package ru.kudinov.model;
 
+import ru.kudinov.model.interfaces.ProducibleRequest;
+import ru.kudinov.model.interfaces.Product;
+
 import javax.persistence.*;
 
 @Entity
-public class ServiceRequest {
+public class ServiceRequest implements ProducibleRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -61,5 +64,15 @@ public class ServiceRequest {
 
     public void setRequest(Request request) {
         this.request = request;
+    }
+
+    @Override
+    public Product getProduct() {
+        return getService();
+    }
+
+    @Override
+    public void setProduct(Product product) {
+        setService((Service) product);
     }
 }

@@ -6,6 +6,8 @@ import ru.kudinov.model.DetailRequest;
 import ru.kudinov.model.Request;
 import ru.kudinov.repository.DetailRequestRepository;
 
+import java.util.List;
+
 @Service
 public class DetailRequestService {
 
@@ -21,5 +23,9 @@ public class DetailRequestService {
 
     public DetailRequest getDetailRequest(Detail detail, Request request) {
         return detailRequestRepository.findByRequestAndDetail(request, detail);
+    }
+
+    public List<DetailRequest> getDetailRequestsByRequest(Request request) {
+        return detailRequestRepository.findByRequest(request);
     }
 }

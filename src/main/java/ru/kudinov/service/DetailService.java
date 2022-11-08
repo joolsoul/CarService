@@ -19,4 +19,11 @@ public class DetailService {
     public List<Detail> findByDetailType(DetailType detailType) {
         return detailRepository.findByDetailType(detailType);
     }
+
+    public Detail findById(Long detailId) {
+        if (detailRepository.findById(detailId).isPresent()) {
+            return detailRepository.findById(detailId).get();
+        }
+        return null;
+    }
 }
