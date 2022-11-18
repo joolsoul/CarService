@@ -1,6 +1,6 @@
 package ru.kudinov.model.interfaces;
 
-public interface ProductType {
+public interface ProducibleType {
     String value = "";
 
     String getValue();

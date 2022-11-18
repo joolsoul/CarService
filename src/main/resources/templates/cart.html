@@ -9,7 +9,7 @@
 <div><a href="/">Главная</a></div>
 
 <div th:if="${cartProductCounter} != 0">
-    <form action="" method="post">
+    <form action="cart/confirmRequest" method="post" th:object="${request}">
 
         <div th:if="${request?.id}" th:text="'Заказ №'+ ${request?.id}">.</div>
 
@@ -18,9 +18,26 @@
 
             <th:block th:each="detailRequest : ${detailRequests}">
                 <p th:utext="${detailRequest?.detail?.name}">..</p>
-                <p th:utext="${detailRequest?.quantity}">..</p>
+                <div class="count">
+                        <span class="change">
+                            <button class="minus" type="button" id="m_" th:attrappend="id=${detailRequest?.detail?.id}">-</button>
+                        </span>
+                    <input class="quantityInput" type="number"
+                           th:name="__${detailRequest?.getProductKind().getPRODUCT_COOKIE_NAME}__ + __${detailRequest?.detail?.id}__"
+                           th:value="${detailRequest?.quantity}"
+                           th:max="${detailRequest?.detail?.quantity}" readonly
+                           id="input_" th:attrappend="id=${detailRequest?.detail?.id}">
+                    <span class="change">
+                            <button class="plus" type="button" id="p_"
+                                    th:attrappend="id=${detailRequest?.detail?.id}">+</button>
+                        </span>
+                </div>
+
                 <p th:utext="${detailRequest?.price}">..</p>
-                <a href="/cart/deleteDetailRequest" th:attrappend="href=${detailRequest?.detail?.id}">Удалить деталь</a>
+                <a th:if="${user}" th:href="@{/cart/removeDetailRequestFromCart/__${detailRequest?.id}__}">Удалить
+                    деталь</a>
+                <a th:unless="${user}" th:href="@{/cart/removeDetailFromCart/__${detailRequest?.detail?.id}__}">Удалить
+                    деталь</a>
                 <p>-------------------</p>
             </th:block>
 
@@ -35,14 +52,15 @@
                 <p th:utext="${serviceRequest?.service?.name}">..</p>
                 <p th:utext="${serviceRequest?.price}">..</p>
 
-                <select name="selectEmployee">
+                <select th:name="__${serviceRequest?.getProductKind().getPRODUCT_COOKIE_NAME}__ + __${serviceRequest?.service?.id}__">
                     <option th:each="employee : ${employees}"
                             th:value="${employee?.id}"
                             th:text="${employee?.name} + ' ' + ${employee?.patronymic} + ' ' + ${employee?.surname}">
                     </option>
                 </select>
-
-                <a href="/cart/deleteServiceRequest" th:attrappend="href=${serviceRequest?.service?.id}">Удалить
+                <a th:if="${user}" th:href="@{/cart/removeServiceRequestFromCart/__${serviceRequest?.id}__}">Удалить
+                    услугу</a>
+                <a th:unless="${user}" th:href="@{/cart/removeServiceFromCart/__${serviceRequest?.service?.id}__}">Удалить
                     услугу</a>
                 <p>------------------</p>
             </th:block>
@@ -52,7 +70,7 @@
 
         <div th:if="${not #lists.isEmpty(serviceRequests)} or ${not #lists.isEmpty(detailRequests)}">
 
-            <div th:unless="${user}">Войдите или зарегистрируйтесь для выбора автомобиля</div>
+            <a th:href="@{/login}" th:unless="${user}">Войдите или зарегистрируйтесь для выбора автомобиля</a>
 
             <div th:if="${user}">
 
@@ -84,7 +102,18 @@
 
         <div th:text="'Стоимость: ' + __${request?.cost}__"></div>
 
-        <button type="submit">Оформить заказ</button>
+        <!--CSRF Token-->
+        <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"/>
+
+        <button th:if="(${not #lists.isEmpty(userCars)} and ${user}) or (${not #lists.isEmpty(detailRequests)} and ${user})"
+                type="submit">Оформить заказ
+        </button>
+        <a th:unless="${user}" th:href="@{/login}">Оформить заказ</a>
+        <a th:if="${#lists.isEmpty(userCars)} and ${user} and ${not #lists.isEmpty(serviceRequests)}"
+           th:href="@{/user/__${user?.id}__}">Оформить заказ</a>
 
     </form>
 </div>
@@ -92,5 +121,7 @@
 <div th:if="${cartProductCounter} == 0">
     Ваша корзина пуста
 </div>
+
+<script src="/./static/js/main.js"></script>
 </body>
 </html>

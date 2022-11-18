@@ -35,6 +35,17 @@ public class User implements UserDetails {
 
     private String email;
 
+    private String image;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private Set<Request> requests;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.REMOVE)
+    private Set<Car> cars;
+
+    public User() {
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
@@ -137,5 +148,17 @@ public class User implements UserDetails {
     @Override
     public String toString() {
         return getUsername();
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public boolean isAdmin() {
+        return getRoles().contains(Role.ADMIN);
     }
 }

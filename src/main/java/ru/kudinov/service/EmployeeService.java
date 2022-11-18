@@ -18,4 +18,11 @@ public class EmployeeService {
     public List<Employee> getEmployees() {
         return employeeRepository.findAll();
     }
+
+    public Employee findById(Long employeeId) {
+        if (employeeRepository.findById(employeeId).isPresent()) {
+            return employeeRepository.findById(employeeId).get();
+        }
+        return null;
+    }
 }

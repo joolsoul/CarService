@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Заказы</title>
+</head>
+<body>
+<div th:text="${message}">
+    {
+</div>
+<a href="/">Главная</a>
+<a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+<ul>
+    <th:block th:each="request : ${requests}">
+
+        <li th:text="'Номер заказа: ' + ${request?.id}">.</li>
+        <a th:href="@{/}" th:text="'Пользователь: ' + ${request?.user?.username}">.</a>
+        <div>
+            Автомобиль:
+            <li th:text="'Регистрационный номер: ' + ${request?.car?.registrationNumber}">.</li>
+            <li th:text="'Марка: ' + ${request?.car?.carBrand}">.</li>
+        </div>
+        <li th:text="'Сервис: ' + ${request?.serviceOrganization?.address}">.</li>
+        <li th:text="'Дата формирования заказа: ' " th:date="${request?.orderDate}">.</li>
+        <li th:text="'Стоимость: ' + ${request?.cost}">.</li>
+        <li th:text="'Статус заказа: ' + ${request?.requestStatus.value}">.</li>
+
+        <a th:href="@{/}">Посмотреть заказ</a>
+        <a th:href="@{/}">Принять заказ</a>
+        <a th:href="@{/}">Отменить заказ</a>
+
+        <p>--------------------------------------</p>
+
+    </th:block>
+</ul>
+
+</body>
+</html>

@@ -34,7 +34,7 @@ public class CarService {
 
     public boolean saveCar(Car car) {
 
-        Car carFromDb = carRepository.findByRegistrationNumber(car.getRegistrationNumber());
+        Car carFromDb = findByRegistrationNumber(car.getRegistrationNumber());
 
         if (carFromDb != null) {
             return false;

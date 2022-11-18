@@ -2,13 +2,13 @@ package ru.kudinov.model;
 
 import ru.kudinov.model.enums.ProductKind;
 import ru.kudinov.model.enums.ServiceType;
-import ru.kudinov.model.interfaces.Product;
-import ru.kudinov.model.interfaces.ProductType;
+import ru.kudinov.model.interfaces.Producible;
+import ru.kudinov.model.interfaces.ProducibleType;
 
 import javax.persistence.*;
 
 @Entity
-public class Service implements Product {
+public class Service implements Producible {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -61,7 +61,7 @@ public class Service implements Product {
     }
 
     @Override
-    public ProductType getProductType() {
+    public ProducibleType getProductType() {
         return getServiceType();
     }
 }

@@ -1,6 +1,7 @@
 package ru.kudinov.model.interfaces;
 
 import ru.kudinov.model.Request;
+import ru.kudinov.model.enums.ProductKind;
 
 public interface ProducibleRequest {
 
@@ -10,11 +11,13 @@ public interface ProducibleRequest {
 
     void setRequest(Request request);
 
-    Product getProduct();
+    Producible getProduct();
 
-    void setProduct(Product product);
+    void setProduct(Producible producible);
 
     Double getPrice();
 
     void setPrice(Double price);
+
+    ProductKind getProductKind();
 }

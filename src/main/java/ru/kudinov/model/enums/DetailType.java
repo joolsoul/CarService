@@ -1,8 +1,8 @@
 package ru.kudinov.model.enums;
 
-import ru.kudinov.model.interfaces.ProductType;
+import ru.kudinov.model.interfaces.ProducibleType;
 
-public enum DetailType implements ProductType {
+public enum DetailType implements ProducibleType {
     ENGINE("Двигатель"),
     TRANSMISSION("Коробка передач");
 

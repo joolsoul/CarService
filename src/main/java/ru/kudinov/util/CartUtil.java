@@ -4,15 +4,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import ru.kudinov.model.*;
 import ru.kudinov.model.enums.ProductKind;
+import ru.kudinov.model.enums.RequestStatus;
+import ru.kudinov.model.interfaces.Producible;
 import ru.kudinov.model.interfaces.ProducibleRequest;
 import ru.kudinov.service.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,15 +25,25 @@ public class CartUtil {
     private final RequestService requestService;
     private final DetailRequestService detailRequestService;
     private final ServRequestService servRequestService;
+    private final ServOrganizationService servOrganizationService;
+    private final CarService carService;
+    private final EmployeeService employeeService;
 
     private final Pattern ID_PATTERN = Pattern.compile("\\d+");
 
-    public CartUtil(ServService servService, DetailService detailService, RequestService requestService, DetailRequestService detailRequestService, ServRequestService servRequestService) {
+    public CartUtil(ServService servService, DetailService detailService, RequestService requestService,
+                    DetailRequestService detailRequestService, ServRequestService servRequestService,
+                    ServOrganizationService servOrganizationService, CarService carService,
+                    EmployeeService employeeService) {
+
         this.servService = servService;
         this.detailService = detailService;
         this.requestService = requestService;
         this.detailRequestService = detailRequestService;
         this.servRequestService = servRequestService;
+        this.servOrganizationService = servOrganizationService;
+        this.carService = carService;
+        this.employeeService = employeeService;
     }
 
     public void createUserCart(Model model, User user,
@@ -113,7 +123,7 @@ public class CartUtil {
             }
 
             calculateRequestCost(userRequest);
-            requestService.saveRequest(userRequest);
+            requestService.updateRequest(userRequest);
 
             basketProductCounter = serviceRequests.size() + detailRequests.size();
 
@@ -193,6 +203,71 @@ public class CartUtil {
         return detailRequests;
     }
 
+    public void removeProducibleWithAuthUser(ProducibleRequest producibleRequest) {
+
+        if (producibleRequest instanceof DetailRequest) {
+            detailRequestService.removeDetailRequest((DetailRequest) producibleRequest);
+        }
+        if (producibleRequest instanceof ServiceRequest) {
+            servRequestService.removeServiceRequest((ServiceRequest) producibleRequest);
+        }
+    }
+
+    public void confirmRequest(User user, Map<String, String> form, Car selectCar, ServiceOrganization selectServiceOrganization) {
+
+        Request request = requestService.getRequest(user);
+        request.setRequestStatus(RequestStatus.CONFIRMED);
+        request.setCar(selectCar);
+        request.setServiceOrganization(selectServiceOrganization);
+        request.setOrderDate(new Date());
+
+        for (Map.Entry<String, String> formElement : form.entrySet()) {
+
+            if (Pattern.matches(ProductKind.DETAIL.getPRODUCT_COOKIE_REGEX(), formElement.getKey())) {
+                Matcher matcher = ID_PATTERN.matcher(formElement.getKey());
+
+                if (matcher.find()) {
+                    String detailId = matcher.group();
+                    Detail detail = detailService.findById(Long.parseLong(detailId));
+
+                    if (detail != null) {
+                        DetailRequest detailRequest = detailRequestService.getDetailRequest(detail, request);
+                        if (detailRequest != null) {
+                            detailRequest.setQuantity(Integer.valueOf(formElement.getValue()));
+                            detailRequestService.saveDetailRequest(detailRequest);
+                            detail.setQuantity(detail.getQuantity() - detailRequest.getQuantity());
+                            detailService.updateDetail(detail);
+                        }
+                    }
+                }
+            }
+            if (Pattern.matches(ProductKind.SERVICE.getPRODUCT_COOKIE_REGEX(), formElement.getKey())) {
+                Matcher matcher = ID_PATTERN.matcher(formElement.getKey());
+
+                if (matcher.find()) {
+                    String serviceId = matcher.group();
+                    Service service = servService.findById(Long.parseLong(serviceId));
+
+                    if (service != null) {
+                        ServiceRequest serviceRequest = servRequestService.getServiceRequest(service, request);
+                        if (serviceRequest != null) {
+                            Employee employee = employeeService.findById(Long.valueOf(formElement.getValue()));
+                            serviceRequest.setEmployee(employee);
+                            servRequestService.saveServiceRequest(serviceRequest);
+                        }
+                    }
+                }
+            }
+
+        }
+        requestService.updateRequest(request);
+    }
+
+    public void removeProducibleWithNonAuthUser(Producible producible, HttpServletResponse httpResponse) {
+        String cookieName = producible.getPRODUCT_KIND().getPRODUCT_COOKIE_NAME() + producible.getId();
+        CookiesUtil.deleteCookie(httpResponse, cookieName);
+    }
+
     private void calculateRequestCost(Request request) {
 
         List<DetailRequest> detailRequests = detailRequestService.getDetailRequestsByRequest(request);
@@ -207,5 +282,4 @@ public class CartUtil {
         request.setCost(detailRequests.stream().mapToDouble(DetailRequest::getPrice).sum() +
                 serviceRequests.stream().mapToDouble(ServiceRequest::getPrice).sum());
     }
-
 }

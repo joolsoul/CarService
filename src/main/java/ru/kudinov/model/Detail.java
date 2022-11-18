@@ -2,13 +2,14 @@ package ru.kudinov.model;
 
 import ru.kudinov.model.enums.DetailType;
 import ru.kudinov.model.enums.ProductKind;
-import ru.kudinov.model.interfaces.Product;
-import ru.kudinov.model.interfaces.ProductType;
+import ru.kudinov.model.interfaces.Producible;
+import ru.kudinov.model.interfaces.ProducibleType;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
-public class Detail implements Product {
+public class Detail implements Producible {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,6 +25,10 @@ public class Detail implements Product {
 
     @Enumerated(EnumType.STRING)
     private DetailType detailType;
+
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "detail_images", joinColumns = @JoinColumn(name = "detail_id"))
+    private Set<String> images;
 
     @Transient
     private final ProductKind PRODUCT_KIND = ProductKind.DETAIL;
@@ -81,7 +86,23 @@ public class Detail implements Product {
     }
 
     @Override
-    public ProductType getProductType() {
+    public ProducibleType getProductType() {
         return getDetailType();
+    }
+
+    public Set<String> getImages() {
+        return images;
+    }
+
+    public void setImages(Set<String> images) {
+        this.images = images;
+    }
+
+    public void addImages(Set<String> imagesToAdd) {
+        this.images.addAll(imagesToAdd);
+    }
+
+    public void deleteImage(String imageToDelete) {
+        this.images.remove(imageToDelete);
     }
 }

@@ -39,6 +39,8 @@ public class Employee {
 
     private Integer wages; //зарплата
 
+    private String image;
+
 
     public Employee() {
     }
@@ -145,5 +147,13 @@ public class Employee {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

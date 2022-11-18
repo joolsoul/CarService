@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<a href="/">Главная</a>
+<a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+<a href="/admin/getServices">Назад</a>
+
+<div th:text="${message}">
+    {
+</div>
+
+<form th:action="@{/admin/editService/__${service?.id}__}" method="post">
+
+    <div class="form-group">
+        <input class="input" type="text" name="name"
+               placeholder="Название услуги"
+               th:value="${service.name}">
+        <input type="text" hidden th:value="${service.name}" name="oldServiceName">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="number" name="price"
+               placeholder="Цена услуги"
+               th:value="${service.price}">
+    </div>
+
+    <select th:if="${not #lists.isEmpty(serviceTypes)}" name="selectServiceType">
+        <option th:each="serviceType : ${serviceTypes}"
+                th:value="${serviceType?.ordinal()}"
+                th:text="${serviceType?.value}"
+                th:selected="${serviceType == service?.serviceType}">
+        </option>
+    </select>
+
+    <button class="btn" type="submit">Редактировать услугу</button>
+
+    <!--CSRF Token-->
+    <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}"/>
+</form>
+
+</body>
+</html>

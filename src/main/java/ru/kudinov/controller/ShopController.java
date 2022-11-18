@@ -83,7 +83,7 @@ public class ShopController {
             } else {
                 detailRequest = new DetailRequest();
                 detailRequest.setDetail(detail);
-                detailRequest.setPrice(detail.getPrice());
+                detailRequest.setPrice(detail.getPrice() * detailQuantity);
                 detailRequest.setRequest(request);
                 if (detailQuantity <= detail.getQuantity()) detailRequest.setQuantity(detailQuantity);
                 else detailRequest.setQuantity(detail.getQuantity());

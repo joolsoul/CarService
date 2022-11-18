@@ -1,7 +1,8 @@
 package ru.kudinov.model;
 
+import ru.kudinov.model.enums.ProductKind;
+import ru.kudinov.model.interfaces.Producible;
 import ru.kudinov.model.interfaces.ProducibleRequest;
-import ru.kudinov.model.interfaces.Product;
 
 import javax.persistence.*;
 
@@ -65,13 +66,18 @@ public class DetailRequest implements ProducibleRequest {
     }
 
     @Override
-    public Product getProduct() {
+    public ProductKind getProductKind() {
+        return getProduct().getPRODUCT_KIND();
+    }
+
+    @Override
+    public Producible getProduct() {
         return getDetail();
     }
 
     @Override
-    public void setProduct(Product product) {
-        setDetail((Detail) product);
+    public void setProduct(Producible producible) {
+        setDetail((Detail) producible);
     }
 
 

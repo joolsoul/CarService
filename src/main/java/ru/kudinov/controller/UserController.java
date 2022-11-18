@@ -1,5 +1,6 @@
 package ru.kudinov.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -7,11 +8,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.kudinov.model.Car;
 import ru.kudinov.model.User;
 import ru.kudinov.service.CarService;
 import ru.kudinov.service.UserService;
+import ru.kudinov.util.ImageUtil;
+
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/user")
@@ -19,10 +24,15 @@ public class UserController {
 
     private final CarService carService;
     private final UserService userService;
+    private final ImageUtil imageUtil;
 
-    public UserController(CarService carService, UserService userService) {
+    @Value("${user.file-directory}")
+    private String userFileDirectory;
+
+    public UserController(CarService carService, UserService userService, ImageUtil imageUtil) {
         this.carService = carService;
         this.userService = userService;
+        this.imageUtil = imageUtil;
     }
 
     @GetMapping("{user}")
@@ -30,7 +40,7 @@ public class UserController {
                                      @PathVariable(required = false) User user) {
 
         if (user == null || !user.getId().equals(authUser.getId())) {
-            return "redirect:" + authUser.getId();
+            return "redirect:/user/" + authUser.getId();
         }
 
         Iterable<Car> cars = carService.findByOwner(authUser);
@@ -84,13 +94,13 @@ public class UserController {
             model.addAttribute("message", "У Вас нет доступа к данному автомобилю");
             model.addAttribute("car", new Car());
             model.addAttribute("user", user);
-            return "carEdit";
+            return "editCar";
         }
 
         model.addAttribute("car", car);
         model.addAttribute("user", user);
 
-        return "carEdit";
+        return "editCar";
     }
 
     @PostMapping("editCar/{car}")
@@ -102,17 +112,17 @@ public class UserController {
 
         if (!carService.findByOwner(user).contains(carToChange)) {
             model.addAttribute("message", "У Вас нет прав на редактирование данного автомобиля");
-            return "carEdit";
+            return "editCar";
         }
 
         if (!carService.editCar(carToChange)) {
             model.addAttribute("message", "Некорректный регистрационный номер автомобиля");
-            return "carEdit";
+            return "editCar";
         }
 
         model.addAttribute("message", "Автомобиль успешно изменён");
 
-        return "carEdit";
+        return "editCar";
     }
 
     @GetMapping("{user}-changePassword")
@@ -201,14 +211,15 @@ public class UserController {
     }
 
     @GetMapping("{user}-edit")
-    public String getUserEditPage(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
+    public String getUserEditPage(Model model, @AuthenticationPrincipal User authUser,
+                                  @PathVariable(required = false) User user) {
 
         if (user == null || !user.getId().equals(authUser.getId())) {
             return "redirect:" + authUser.getId() + "-edit";
         }
         model.addAttribute("user", authUser);
 
-        return "userEdit";
+        return "editUser";
     }
 
     //TODO добавление почты
@@ -220,19 +231,34 @@ public class UserController {
 
         if (!changeUser.getId().equals(user.getId())) {
             model.addAttribute("message", "У Вас нет прав для редактирования данного пользователя");
-            return "userEdit";
+            return "editUser";
         }
 
         if (!userService.updateUser(changeUser)) {
             model.addAttribute("message", "Введены некорректные данные");
             model.addAttribute("user", changeUser);
-            return "userEdit";
+            return "editUser";
         }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(changeUser, changeUser.getPassword(), changeUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         model.addAttribute("message", "Изменения успешно сохранены");
 
-        return "userEdit";
+        return "editUser";
+    }
+
+    @PostMapping("{user}-changeImage")
+    public String changeImage(Model model, @AuthenticationPrincipal User user,
+                              @RequestParam(value = "uploadImage", required = false) MultipartFile uploadImage) throws IOException {
+
+        String fileName = "user_" + user.getId() + "_profileImage.png";
+        user.setImage(imageUtil.loadImage(uploadImage, userFileDirectory, fileName));
+        userService.updateUser(user);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        model.addAttribute("message", "Фото изменено");
+
+        return "redirect:/user/{user}";
     }
 }

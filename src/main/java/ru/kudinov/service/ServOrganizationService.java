@@ -15,6 +15,13 @@ public class ServOrganizationService {
         this.serviceOrganizationRepository = serviceOrganizationRepository;
     }
 
+    public ServiceOrganization findById(Long serviceOrganizationId) {
+        if (serviceOrganizationRepository.findById(serviceOrganizationId).isPresent()) {
+            return serviceOrganizationRepository.findById(serviceOrganizationId).get();
+        }
+        return null;
+    }
+
     public List<ServiceOrganization> getServiceOrganizations() {
         return serviceOrganizationRepository.findAll();
     }

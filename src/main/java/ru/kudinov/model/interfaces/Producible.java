@@ -2,7 +2,7 @@ package ru.kudinov.model.interfaces;
 
 import ru.kudinov.model.enums.ProductKind;
 
-public interface Product {
+public interface Producible {
 
     Long getId();
 
@@ -12,5 +12,5 @@ public interface Product {
 
     ProductKind getPRODUCT_KIND();
 
-    ProductType getProductType();
+    ProducibleType getProductType();
 }

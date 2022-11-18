@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface DetailRepository extends JpaRepository<Detail, Long> {
     List<Detail> findByDetailType(DetailType detailType);
+
+    Detail findByName(String name);
 }

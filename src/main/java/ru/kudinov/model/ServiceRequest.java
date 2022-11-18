@@ -1,7 +1,8 @@
 package ru.kudinov.model;
 
+import ru.kudinov.model.enums.ProductKind;
+import ru.kudinov.model.interfaces.Producible;
 import ru.kudinov.model.interfaces.ProducibleRequest;
-import ru.kudinov.model.interfaces.Product;
 
 import javax.persistence.*;
 
@@ -58,6 +59,11 @@ public class ServiceRequest implements ProducibleRequest {
         this.price = price;
     }
 
+    @Override
+    public ProductKind getProductKind() {
+        return getProduct().getPRODUCT_KIND();
+    }
+
     public Request getRequest() {
         return request;
     }
@@ -67,12 +73,12 @@ public class ServiceRequest implements ProducibleRequest {
     }
 
     @Override
-    public Product getProduct() {
+    public Producible getProduct() {
         return getService();
     }
 
     @Override
-    public void setProduct(Product product) {
-        setService((Service) product);
+    public void setProduct(Producible producible) {
+        setService((Service) producible);
     }
 }

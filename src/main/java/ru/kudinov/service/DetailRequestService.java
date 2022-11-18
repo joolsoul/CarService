@@ -17,9 +17,18 @@ public class DetailRequestService {
         this.detailRequestRepository = detailRequestRepository;
     }
 
-    public void saveDetailRequest(DetailRequest detailRequest) {
-        detailRequestRepository.save(detailRequest);
+    public DetailRequest findById(Long detailRequestId) {
+        if (detailRequestRepository.findById(detailRequestId).isPresent()) {
+            return detailRequestRepository.findById(detailRequestId).get();
+        }
+        return null;
     }
+
+    public boolean saveDetailRequest(DetailRequest detailRequest) {
+        detailRequestRepository.save(detailRequest);
+        return true;
+    }
+
 
     public DetailRequest getDetailRequest(Detail detail, Request request) {
         return detailRequestRepository.findByRequestAndDetail(request, detail);
@@ -27,5 +36,9 @@ public class DetailRequestService {
 
     public List<DetailRequest> getDetailRequestsByRequest(Request request) {
         return detailRequestRepository.findByRequest(request);
+    }
+
+    public void removeDetailRequest(DetailRequest detailRequest) {
+        detailRequestRepository.delete(detailRequest);
     }
 }

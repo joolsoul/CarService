@@ -16,8 +16,17 @@ public class ServRequestService {
         this.serviceRequestRepository = serviceRequestRepository;
     }
 
-    public void saveServiceRequest(ServiceRequest serviceRequest) {
+    public ServiceRequest findById(Long serviceRequestId) {
+        if (serviceRequestRepository.findById(serviceRequestId).isPresent()) {
+            return serviceRequestRepository.findById(serviceRequestId).get();
+        }
+        return null;
+    }
+
+    public boolean saveServiceRequest(ServiceRequest serviceRequest) {
+
         serviceRequestRepository.save(serviceRequest);
+        return true;
     }
 
     public ServiceRequest getServiceRequest(ru.kudinov.model.Service service, Request request) {
@@ -26,5 +35,9 @@ public class ServRequestService {
 
     public List<ServiceRequest> getServiceRequestsByRequest(Request request) {
         return serviceRequestRepository.findByRequest(request);
+    }
+
+    public void removeServiceRequest(ServiceRequest serviceRequest) {
+        serviceRequestRepository.delete(serviceRequest);
     }
 }
