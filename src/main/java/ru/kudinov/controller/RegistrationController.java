@@ -3,32 +3,37 @@ package ru.kudinov.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.kudinov.model.User;
 import ru.kudinov.service.UserService;
+import ru.kudinov.util.ImageUtil;
 
 @Controller
 public class RegistrationController {
 
     private final UserService userService;
+    private final ImageUtil imageUtil;
 
-    public RegistrationController(UserService userService) {
+    public RegistrationController(UserService userService, ImageUtil imageUtil) {
         this.userService = userService;
+        this.imageUtil = imageUtil;
     }
 
     @GetMapping("/registration")
-    public String getRegistrationPage(Model model) {
+    public String getRegistrationPage() {
 
         return "registration";
     }
 
     @PostMapping("/registration")
-    public String addUser(User user, Model model,
+    public String addUser(@ModelAttribute User user, Model model,
                           @RequestParam(name = "passwordConfirm") String passwordConfirm,
                           RedirectAttributes redirectAttributes) {
 
+        imageUtil.setUserDefaultImage(user);
 
         model.addAttribute("passwordConfirm", passwordConfirm);
 

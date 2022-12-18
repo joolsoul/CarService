@@ -282,4 +282,15 @@ public class CartUtil {
         request.setCost(detailRequests.stream().mapToDouble(DetailRequest::getPrice).sum() +
                 serviceRequests.stream().mapToDouble(ServiceRequest::getPrice).sum());
     }
+
+    public void returnDetails(Request request) {
+        Set<DetailRequest> detailRequests = request.getDetailRequests();
+
+        for (DetailRequest detailRequest : detailRequests) {
+            Detail detail = detailRequest.getDetail();
+            detail.setQuantity(detail.getQuantity() + detailRequest.getQuantity());
+            detailService.updateDetail(detail);
+        }
+
+    }
 }

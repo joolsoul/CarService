@@ -18,6 +18,9 @@
 
             <th:block th:each="detailRequest : ${detailRequests}">
                 <p th:utext="${detailRequest?.detail?.name}">..</p>
+                <div th:each="path : ${detailRequest?.detail?.images}">
+                    <img th:src="@{/img/__${path}__}" alt="Нажмите для выбора файла." width="50px" height="50px">
+                </div>
                 <div class="count">
                         <span class="change">
                             <button class="minus" type="button" id="m_" th:attrappend="id=${detailRequest?.detail?.id}">-</button>
@@ -47,6 +50,8 @@
 
         <div th:if="${not #lists.isEmpty(serviceRequests)}">
             <h1>Услуги</h1>
+
+            <a href="/">Список работников</a>
 
             <th:block th:each="serviceRequest : ${serviceRequests}">
                 <p th:utext="${serviceRequest?.service?.name}">..</p>
@@ -108,7 +113,8 @@
                 th:name="${_csrf.parameterName}"
                 th:value="${_csrf.token}"/>
 
-        <button th:if="(${not #lists.isEmpty(userCars)} and ${user}) or (${not #lists.isEmpty(detailRequests)} and ${user})"
+        <button th:if="(${not #lists.isEmpty(userCars)} and ${user}) or
+        ( ${not #lists.isEmpty(userCars)} and ${not #lists.isEmpty(detailRequests)} and ${user})"
                 type="submit">Оформить заказ
         </button>
         <a th:unless="${user}" th:href="@{/login}">Оформить заказ</a>

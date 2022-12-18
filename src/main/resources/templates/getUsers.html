@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="../static/css/main.css">
+
+
+    <title>Пользователи</title>
+</head>
+<body>
+<div class="container">
+    <div th:text="${message}">
+        {
+    </div>
+
+    <a href="/">Главная</a>
+    <a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+
+
+    <th:block th:each="user : ${users}">
+        <div class="user-item">
+            <div class="user-info">
+                <div class="user-info__item">
+                    <img th:src="@{/img/__${user?.image}__}" alt="Нажмите для выбора файла." width="50px" height="50px">
+                </div>
+                <div class="user-info__item">
+                    <h4>Id</h4>
+                    <p th:text="${user.id}">.</p>
+                </div>
+                <div class="user-info__item">
+                    <h4>Логин</h4>
+                    <p th:text="${user.username}">.</p>
+                </div>
+                <div class="user-info__item">
+                    <h4>Статус</h4>
+                    <p th:text="${user.roles}">.</p>
+                </div>
+                <div class="user-info__item">
+                    <h4>ФИО</h4>
+                    <p th:text="${user.surname} + ' ' + ${user.name} + ' ' + ${user.patronymic}">.</p>
+                </div>
+                <div class="user-info__item">
+                    <h4>Номер</h4>
+                    <p th:text="${user.phoneNumber}">.</p>
+                </div>
+            </div>
+            <div class="user-actions">
+                <a class="user-link" th:href="@{/user/__${user.id}__}">Перейти</a>
+                <a class="user-link" href="/admin/deleteUser/" th:attrappend="href=${user.id}">Удалить пользователя</a>
+            </div>
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

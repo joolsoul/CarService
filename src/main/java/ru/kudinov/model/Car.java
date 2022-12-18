@@ -1,6 +1,7 @@
 package ru.kudinov.model;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 public class Car {
@@ -16,6 +17,9 @@ public class Car {
     private User owner;
 
     private String carBrand;
+
+    @OneToMany(mappedBy = "car", cascade = CascadeType.REMOVE)
+    private Set<Request> requests;
 
     public Car(String registrationNumber, String carBrand) {
         this.registrationNumber = registrationNumber;

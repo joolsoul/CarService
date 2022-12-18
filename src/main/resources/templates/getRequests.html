@@ -25,9 +25,10 @@
         <li th:text="'Стоимость: ' + ${request?.cost}">.</li>
         <li th:text="'Статус заказа: ' + ${request?.requestStatus.value}">.</li>
 
-        <a th:href="@{/}">Посмотреть заказ</a>
-        <a th:href="@{/}">Принять заказ</a>
-        <a th:href="@{/}">Отменить заказ</a>
+        <a th:href="@{/getRequest/__${request?.getId()}__}">Посмотреть заказ</a>
+        <a th:href="@{/admin/applyRequest/__${request?.id}__}">Принять заказ</a>
+        <a th:href="@{/cancelRequest/__${request?.id}__}">Отменить заказ</a>
+        <a th:href="@{/admin/deleteRequest/__${request.id}__}">Удалить заказ</a>
 
         <p>--------------------------------------</p>
 

@@ -6,6 +6,8 @@ import ru.kudinov.model.interfaces.Producible;
 import ru.kudinov.model.interfaces.ProducibleType;
 
 import javax.persistence.*;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -28,7 +30,9 @@ public class Detail implements Producible {
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "detail_images", joinColumns = @JoinColumn(name = "detail_id"))
-    private Set<String> images;
+    private Set<String> images = new HashSet<>();
+
+    private boolean isActive;
 
     @Transient
     private final ProductKind PRODUCT_KIND = ProductKind.DETAIL;
@@ -91,7 +95,8 @@ public class Detail implements Producible {
     }
 
     public Set<String> getImages() {
-        return images;
+        if (this.images.size() == 0) return Collections.singleton("static/detailDefaultImage.png");
+        return this.images;
     }
 
     public void setImages(Set<String> images) {
@@ -104,5 +109,21 @@ public class Detail implements Producible {
 
     public void deleteImage(String imageToDelete) {
         this.images.remove(imageToDelete);
+    }
+
+    public boolean isDefaultImage() {
+        return this.images.size() == 0;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive() {
+        this.isActive = true;
+    }
+
+    public void setNonActive() {
+        this.isActive = false;
     }
 }

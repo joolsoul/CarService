@@ -7,12 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import ru.kudinov.model.Detail;
-import ru.kudinov.model.Service;
-import ru.kudinov.model.User;
-import ru.kudinov.model.enums.DetailType;
-import ru.kudinov.model.enums.RequestStatus;
-import ru.kudinov.model.enums.ServiceType;
+import ru.kudinov.model.*;
+import ru.kudinov.model.enums.*;
 import ru.kudinov.service.*;
 import ru.kudinov.util.ImageUtil;
 
@@ -28,7 +24,6 @@ public class AdminController {
     private final UserService userService;
     private final DetailService detailService;
     private final RequestService requestService;
-    private final PromoService promoService;
     private final ServService servService;
     private final ServOrganizationService servOrganizationService;
     private final EmployeeService employeeService;
@@ -37,14 +32,22 @@ public class AdminController {
     @Value("${detail.file-directory}")
     private String detailFileDirectory;
 
+    @Value("${employee.file-directory}")
+    private String employeeFileDirectory;
+
+    @Value("${default.employee-image.path}")
+    private String defaultEmployeeImagePath;
+
+    @Value("${default.user-image.path}")
+    private String defaultUserImagePath;
+
     public AdminController(UserService userService, DetailService detailService, RequestService requestService,
-                           PromoService promoService, ServService servService,
+                           ServService servService,
                            ServOrganizationService servOrganizationService, EmployeeService employeeService,
                            ImageUtil imageUtil) {
         this.userService = userService;
         this.detailService = detailService;
         this.requestService = requestService;
-        this.promoService = promoService;
         this.servService = servService;
         this.servOrganizationService = servOrganizationService;
         this.employeeService = employeeService;
@@ -58,19 +61,18 @@ public class AdminController {
         model.addAttribute("users", userService.allUsers());
         model.addAttribute("user", user);
 
-        return "userList";
+        return "getUsers";
     }
 
     @GetMapping("deleteUser/{user}")
     public String deleteUser(RedirectAttributes redirectAttributes, @PathVariable User user) throws IOException {
 
-        imageUtil.deleteFile(user.getImage());
+        if (!Objects.equals(user.getImage(), defaultUserImagePath)) imageUtil.deleteFile(user.getImage());
         userService.deleteUser(user);
         redirectAttributes.addFlashAttribute("message", "Пользователь успешно удален");
 
         return "redirect:/admin/getUsers";
     }
-
 
     @GetMapping("getRequests")
     public String getRequestsPage(Model model, @AuthenticationPrincipal User user) {
@@ -78,7 +80,6 @@ public class AdminController {
         model.addAttribute("requests", requestService.allRequests(RequestStatus.CONFIRMED));
         return "getRequests";
     }
-
 
     @GetMapping("getDetails")
     public String getDetailsPage(Model model, @AuthenticationPrincipal User user) {
@@ -120,14 +121,14 @@ public class AdminController {
         List<String> imagesToDeleteArr = new LinkedList<>();
         if (!imagesToDelete.equals("")) imagesToDeleteArr = List.of(imagesToDelete.split(";"));
 
-        if (imagesToDeleteArr.size() != 0) {
+        if (imagesToDeleteArr.size() != 0 && !editDetail.isDefaultImage()) {
             imagesToDeleteArr.forEach(editDetail::deleteImage);
 
             try {
                 for (String image : imagesToDeleteArr) {
                     imageUtil.deleteFile(image);
                 }
-                if (editDetail.getImages().size() == 0)
+                if (editDetail.isDefaultImage())
                     imageUtil.deleteFile(detailFileDirectory + "detail_" + editDetail.getId());
             } catch (IOException e) {
                 redirectAttributes.addFlashAttribute("message", "Ошибка удаления изображения");
@@ -152,10 +153,8 @@ public class AdminController {
     public String deleteDetail(RedirectAttributes redirectAttributes, @PathVariable Detail detail) {
 
         detailService.deleteDetail(detail);
+
         try {
-            for (String image : detail.getImages()) {
-                imageUtil.deleteFile(image);
-            }
             imageUtil.deleteFile(detailFileDirectory + "detail_" + detail.getId());
         } catch (IOException e) {
             redirectAttributes.addFlashAttribute("message", "Ошибка удаления");
@@ -200,6 +199,7 @@ public class AdminController {
         return "redirect:/admin/getDetails";
     }
 
+//----------------------------------------------------------------------------------------------------------------------
 
     @GetMapping("getServices")
     public String getServicesPage(Model model, @AuthenticationPrincipal User user) {
@@ -284,45 +284,183 @@ public class AdminController {
         return "redirect:/admin/getServices";
     }
 
+//----------------------------------------------------------------------------------------------------------------------
 
-//    @GetMapping("getPromotions")
-//    public String getPromotionsPage(Model model) {
-//
-//        return "/";
-//    }
-//
-//    @PostMapping("addPromo")
-//    public String addPromo(Model model) {
-//
-//        return "/";
-//    }
-//    @GetMapping("getServiceOrganizations")
-//    public String getServiceOrganizationsPage(Model model) {
-//
-//        return "/";
-//    }
-//
-//    @PostMapping("addServiceOrganization")
-//    public String addServiceOrganization(Model model) {
-//
-//        return "/";
-//    }
-//
-//    @GetMapping("getEmployees")
-//    public String getEmployeesPage(Model model) {
-//
-//        return "/";
-//    }
-//
-//    @PostMapping("addEmployee")
-//    public String addEmployee(Model model) {
-//
-//        return "/";
-//    }
-//
-//
-//    //TODO: Сделать отображения информации о конкретном пользователе, основываясь на pathVariable
-//    //TODO: редактирование машин, информации о пользователе и его прав
+    @GetMapping("getEmployees")
+    public String getEmployeesPage(Model model, @AuthenticationPrincipal User user) {
+
+        model.addAttribute("employees", employeeService.allEmployees());
+        model.addAttribute("user", user);
+        return "getEmployees";
+    }
+
+    @GetMapping("editEmployee/{employee}")
+    public String getEditEmployeePage(Model model, @PathVariable Employee employee, @AuthenticationPrincipal User user) {
+        model.addAttribute("employee", employee);
+        model.addAttribute("posts", Post.values());
+        model.addAttribute("workSchedules", EmployeeWorkSchedule.values());
+        model.addAttribute("user", user);
+
+        return "editEmployee";
+    }
+
+    @PostMapping("editEmployee/{employee}")
+    public String editEmployee(Model model, @AuthenticationPrincipal User user,
+                               @ModelAttribute Employee editEmployee,
+                               @RequestParam int selectPost,
+                               @RequestParam int selectWorkSchedule,
+                               RedirectAttributes redirectAttributes) {
+
+        if (selectPost != editEmployee.getPost().ordinal())
+            editEmployee.setPost(Post.values()[selectPost]);
+        if (selectWorkSchedule != editEmployee.getEmployeeWorkSchedule().ordinal())
+            editEmployee.setEmployeeWorkSchedule(EmployeeWorkSchedule.values()[selectWorkSchedule]);
+
+        if (!employeeService.saveEmployee(editEmployee)) {
+            model.addAttribute("message", "Были введены некорректные данные");
+            model.addAttribute("employee", editEmployee);
+            model.addAttribute("posts", Post.values());
+            model.addAttribute("workSchedules", EmployeeWorkSchedule.values());
+            model.addAttribute("user", user);
+            return "editEmployee";
+        }
+
+        redirectAttributes.addFlashAttribute("message", "Данные успешно отредактированы");
+        return "redirect:/admin/getEmployees";
+    }
+
+    @PostMapping("editEmployeeImage/{employee}")
+    public String editEmployeeImage(@PathVariable Employee employee, RedirectAttributes redirectAttributes,
+                                    @RequestParam MultipartFile uploadImage) throws IOException {
+        saveEmployeeImage(uploadImage, employee);
+        redirectAttributes.addFlashAttribute("message", "Фотография успешно изменена");
+        return "redirect:/admin/editEmployee/" + employee.getId();
+    }
+
+    @GetMapping("deleteEmployee/{employee}")
+    public String deleteEmployee(RedirectAttributes redirectAttributes, @PathVariable Employee employee) {
+
+        employeeService.deleteEmployee(employee);
+
+        redirectAttributes.addFlashAttribute("message", "Работник успешно удалён");
+
+        return "redirect:/admin/getEmployees";
+    }
+
+    @GetMapping("addEmployee")
+    public String getAddEmployeePage(Model model, @AuthenticationPrincipal User user) {
+
+        model.addAttribute("user", user);
+        model.addAttribute("posts", Post.values());
+        model.addAttribute("workSchedules", EmployeeWorkSchedule.values());
+
+        return "addEmployee";
+    }
+
+    @PostMapping("addEmployee")
+    public String addEmployee(RedirectAttributes redirectAttributes, @ModelAttribute Employee employee,
+                              @RequestParam(required = false) MultipartFile uploadImage,
+                              @RequestParam int selectPost,
+                              @RequestParam int selectWorkSchedule) throws IOException {
+
+        employee.setPost(Post.values()[selectPost]);
+        employee.setEmployeeWorkSchedule(EmployeeWorkSchedule.values()[selectWorkSchedule]);
+
+        if (!employeeService.saveEmployee(employee)) {
+            redirectAttributes.addFlashAttribute("message", "Введены некорректные данные");
+            redirectAttributes.addFlashAttribute("employee", employee);
+            return "redirect:/admin/addEmployee";
+        }
+        saveEmployeeImage(uploadImage, employee);
+        redirectAttributes.addFlashAttribute("message", "Работник успешно добавлен");
+        return "redirect:/admin/getEmployees";
+    }
+
+    private void saveEmployeeImage(MultipartFile uploadImage, Employee employee) throws IOException {
+        if (uploadImage == null || Objects.equals(uploadImage.getOriginalFilename(), "")) {
+            employee.setImage(defaultEmployeeImagePath);
+        } else {
+            String fileName = "employee_" + employee.getId() + "_profileImage.png";
+            employee.setImage(imageUtil.loadImage(uploadImage, employeeFileDirectory, fileName));
+            employeeService.saveEmployee(employee);
+        }
+    }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+    @GetMapping("getServiceOrganizations")
+    public String getServiceOrganizationsPage(Model model, @AuthenticationPrincipal User user) {
+
+        model.addAttribute("serviceOrganizations", servOrganizationService.allServiceOrganizations());
+        model.addAttribute("user", user);
+        return "getServiceOrganizations";
+    }
+
+    @GetMapping("editServiceOrganization/{serviceOrganization}")
+    public String getEditServiceOrganizationPage(Model model, @PathVariable ServiceOrganization serviceOrganization, @AuthenticationPrincipal User user) {
+
+        model.addAttribute("servOrgWorkSchedules", ServOrgWorkSchedule.values());
+        model.addAttribute("serviceOrganization", serviceOrganization);
+        model.addAttribute("user", user);
+
+        return "editServiceOrganization";
+    }
+
+    @PostMapping("editServiceOrganization/{serviceOrganization}")
+    public String editServiceOrganization(@ModelAttribute ServiceOrganization serviceOrganization,
+                                          RedirectAttributes redirectAttributes,
+                                          @RequestParam String selectWorkSchedules) {
+
+        serviceOrganization.setServOrgWorkSchedule(ServOrgWorkSchedule.values()[Integer.parseInt(selectWorkSchedules)]);
+
+        servOrganizationService.updateServiceOrganization(serviceOrganization);
+        redirectAttributes.addFlashAttribute("message", "Данные успешно отредактированы");
+        return "redirect:/admin/getServiceOrganizations";
+    }
+
+    @GetMapping("deleteServiceOrganization/{serviceOrganization}")
+    public String deleteServiceOrganization(RedirectAttributes redirectAttributes,
+                                            @PathVariable ServiceOrganization serviceOrganization) {
+
+        servOrganizationService.deleteServiceOrganization(serviceOrganization);
+
+        redirectAttributes.addFlashAttribute("message", "Автосервис успешно удалён");
+
+        return "redirect:/admin/getServiceOrganizations";
+    }
+
+    @GetMapping("addServiceOrganization")
+    public String getAddServiceOrganizationPage(Model model, @AuthenticationPrincipal User user) {
+
+        model.addAttribute("servOrgWorkSchedules", ServOrgWorkSchedule.values());
+        model.addAttribute("user", user);
+
+        return "addServiceOrganization";
+    }
+
+    @PostMapping("addServiceOrganization")
+    public String addServiceOrganization(Model model, @AuthenticationPrincipal User user,
+                                         RedirectAttributes redirectAttributes,
+                                         @ModelAttribute ServiceOrganization serviceOrganization,
+                                         @RequestParam String selectWorkSchedules) {
+
+        serviceOrganization.setServOrgWorkSchedule(ServOrgWorkSchedule.values()[Integer.parseInt(selectWorkSchedules)]);
+
+        if (!servOrganizationService.saveServiceOrganization(serviceOrganization)) {
+            model.addAttribute("serviceOrganization", serviceOrganization);
+            model.addAttribute("user", user);
+            model.addAttribute("message", "Автосервис по данному адресу уже существует");
+
+            return "addServiceOrganization";
+        }
+        redirectAttributes.addFlashAttribute("message", "Автосервис успешно добавлен");
+        return "redirect:/admin/getServiceOrganizations";
+    }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//TODO: Сделать отображения информации о конкретном пользователе, основываясь на pathVariable
+//TODO: редактирование машин, информации о пользователе и его прав
 //    @GetMapping("/user/{user}")
 //    public String getUserPage(Model model, @PathVariable String user) {
 //        return "index";

@@ -3,6 +3,7 @@
 <head>
     <title>Getting Started: Serving Web Content</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="../static/css/main.css">
 </head>
 <body>
 <a href="/">Главная</a>
@@ -25,33 +26,42 @@
             </div>
             <button type="submit" id="loadImageSubmitButton" hidden></button>
         </form>
+        <a th:href="@{/user/__${user?.id}__-deleteImage}">Удалить фото</a>
     </div>
 
     <div>
         <p th:text="__${user?.surname}__ + ' ' + __${user?.name}__ + ' ' + __${user?.patronymic}__"></p>
+
         <div>
             <span>Номер: </span>
             <span th:text="${user?.phoneNumber}"> </span>
         </div>
-        <div>
-            <span>Почта: </span>
-            <span th:if="${user?.email}" th:text="${user?.email}"></span>
-            <a th:unless="${user?.email}">Указать почту</a>
-        </div>
+
         <div>
             <span>Логин: </span>
             <span th:text="${user?.username}"> </span>
+            <div>
+                <a href="/user/" th:attrappend="href=${user.id + '-changeLogin'}">Изменить логин</a>
+            </div>
         </div>
 
         <div>
-            <a href="/user/" th:attrappend="href=${user.id + '-edit'}">Редактировать аккаунт</a>
+            <span th:if="${user?.email}" th:text="'Почта: ' + ${user?.email}"></span>
+            <div>
+                <a th:href="@{/user/__${user.id}__-changeEmail}">Редактировать почту</a>
+            </div>
         </div>
+
         <div>
-            <a href="/user/" th:attrappend="href=${user.id + '-changePassword'}">Изменить пароль</a>
+            <a href="/user/" th:attrappend="href=${user.id + '-edit'}">Редактировать профиль</a>
         </div>
+
         <div>
-            <a href="/user/" th:attrappend="href=${user.id + '-changeLogin'}">Изменить логин</a>
+            <a th:unless="${adminOnUserPage}" href="/user/" th:attrappend="href=${user.id + '-changePassword'}">Изменить
+                пароль</a>
+            <a th:if="${adminOnUserPage}" th:href="@{/passwordReset/__${user.id}__}">Сбросить пароль</a>
         </div>
+
     </div>
 </div>
 
@@ -59,7 +69,7 @@
 <div>Список автомобилей</div>
 
 <div>
-    <form method="post" action="addCar">
+    <form method="post" th:action="@{/user/__${user.id}__/addCar}">
         <div th:text="${message}">
             {
         </div>
@@ -83,8 +93,8 @@
             <li th:utext="${car.carBrand}">..</li>
             <li th:utext="${car.registrationNumber}">..</li>
             <a href="/getRequestsByCar/" th:attrappend="href=${car.id}">История заказов</a>
-            <a href="/user/deleteCar/" th:attrappend="href=${car.id}">Удалить машину</a>
-            <a href="/user/editCar/" th:attrappend="href=${car.id}">Редактировать машину</a>
+            <a th:href="@{/user/__${user.id}__/deleteCar/__${car.id}__}">Удалить машину</a>
+            <a th:href="@{/user/__${user.id}__/editCar/__${car.id}__}">Редактировать машину</a>
             <p>-----------------------------------------</p>
         </th:block>
     </ul>
@@ -95,11 +105,8 @@
 
     <a th:href="@{/admin/getUsers}">Список пользователей</a>
 
-    <a th:href="@{/admin/getUsers}">Список работников</a>
-    <a th:href="@{/admin/getUsers}">Добавить работника</a>
-
-    <a th:href="@{/admin/getUsers}">Список акций</a>
-    <a th:href="@{/admin/getUsers}">Добавить акцию</a>
+    <a th:href="@{/admin/getEmployees}">Список работников</a>
+    <a th:href="@{/admin/addEmployee}">Добавить работника</a>
 
     <a th:href="@{/admin/getDetails}">Список деталей</a>
     <a th:href="@{/admin/addDetail}">Добавить деталь</a>
@@ -107,8 +114,45 @@
     <a th:href="@{/admin/getServices}">Список услуг</a>
     <a th:href="@{/admin/addService}">Добавить услугу</a>
 
-    <a th:href="@{/admin/getUsers}">Список сервисов</a>
-    <a th:href="@{/admin/getUsers}">Добавить сервис</a>
+    <a th:href="@{/admin/getServiceOrganizations}">Список сервисов</a>
+    <a th:href="@{/admin/addServiceOrganization}">Добавить сервис</a>
+</div>
+
+<div>
+    <th:block th:each="request : ${requests}">
+        <div class="user-item">
+            <div class="user-info">
+
+                <div class="user-info__item">
+                    <h4>Номер заказа</h4>
+                    <p th:text="${request.id}">.</p>
+                </div>
+                <div class="user-info__item">
+                    <h4>Автомобиль</h4>
+                    <p th:text="${request.car?.registrationNumber}">.</p>
+                </div>
+                <div class="user-info__item">
+                    <h4>Дата заказа</h4>
+                    <p th:text="${request.orderDate}">.</p>
+                </div>
+                <div class="user-info__item">
+                    <h4>Стоимость</h4>
+                    <p th:text="${request.cost}">.</p>
+                </div>
+                <div class="user-info__item">
+                    <h4>Статус</h4>
+                    <p th:text="${request.requestStatus}">.</p>
+                </div>
+            </div>
+            <div class="user-actions">
+                <a class="user-link" th:unless="${request.isRequestCancelled()}"
+                   th:href="@{/cancelRequest/__${request.id}__}">Отменить</a>
+                <a class="user-link" th:href="@{/getRequest/__${request.id}__}">Просмотреть заказ</a>
+                <a class="user-link" th:if="${authUser.isAdmin()}" th:href="@{/admin/deleteRequest/__${request.id}__}">Удалить
+                    заказ</a>
+            </div>
+        </div>
+    </th:block>
 </div>
 
 <script src="/./static/js/user.js"></script>

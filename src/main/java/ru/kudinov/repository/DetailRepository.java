@@ -7,7 +7,9 @@ import ru.kudinov.model.enums.DetailType;
 import java.util.List;
 
 public interface DetailRepository extends JpaRepository<Detail, Long> {
-    List<Detail> findByDetailType(DetailType detailType);
+    List<Detail> findByDetailTypeAndIsActive(DetailType detailType, boolean isActive);
 
     Detail findByName(String name);
+
+    List<Detail> findAllByIsActive(boolean isActive);
 }

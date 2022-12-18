@@ -1,5 +1,6 @@
 package ru.kudinov.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.kudinov.model.enums.RequestStatus;
 
 import javax.persistence.*;
@@ -22,11 +23,12 @@ public class Request {
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_organization_id")
     private ServiceOrganization serviceOrganization;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH-mm")
     private Date orderDate;
 
     private Double cost;
@@ -94,5 +96,25 @@ public class Request {
 
     public void setRequestStatus(RequestStatus requestStatus) {
         this.requestStatus = requestStatus;
+    }
+
+    public boolean isRequestCancelled() {
+        return this.requestStatus == RequestStatus.CANCELLED;
+    }
+
+    public Set<DetailRequest> getDetailRequests() {
+        return detailRequests;
+    }
+
+    public void setDetailRequests(Set<DetailRequest> detailRequests) {
+        this.detailRequests = detailRequests;
+    }
+
+    public Set<ServiceRequest> getServiceRequests() {
+        return serviceRequests;
+    }
+
+    public void setServiceRequests(Set<ServiceRequest> serviceRequests) {
+        this.serviceRequests = serviceRequests;
     }
 }

@@ -1,11 +1,11 @@
 package ru.kudinov.model.enums;
 
 public enum RequestStatus {
-    NOT_CONFIRMED("Не подтверждённый"),
-    CONFIRMED("Подтверждённый"),
+    NOT_CONFIRMED("Не подтверждён"),
+    CONFIRMED("Подтверждён"),
     IN_PROGRESS("В процессе"),
-    COMPLETED("Завершённый"),
-    CANCELLED("Отменённый");
+    COMPLETED("Завершён"),
+    CANCELLED("Отменён");
 
     private String value;
 

@@ -30,12 +30,22 @@ public class RequestService {
         return request;
     }
 
+    public void deleteRequest(Request request) {
+        requestRepository.delete(request);
+    }
+
     public List<Request> allRequests(RequestStatus requestStatus) {
         return requestRepository.findByRequestStatus(requestStatus);
     }
 
     public Request findNotConfirmedRequest(User user) {
-        return requestRepository.findByUserAndRequestStatus(user, RequestStatus.NOT_CONFIRMED);
+        List<Request> requests = requestRepository.findByUserAndRequestStatus(user, RequestStatus.NOT_CONFIRMED);
+        if (requests.size() == 0) return null;
+        return requests.get(0);
+    }
+
+    public List<Request> findAllRequestsWithoutNotConf(User user) {
+        return requestRepository.findByUserAndRequestStatusNot(user, RequestStatus.NOT_CONFIRMED);
     }
 
     public List<Request> findAllRequests(User user) {

@@ -1,8 +1,10 @@
 package ru.kudinov.util;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import ru.kudinov.model.User;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +18,14 @@ public class ImageUtil {
 
     @Value("${upload.path}")
     private String uploadPath;
+
+    @Value("${default.user-image.path}")
+    private String defaultUserImagePath;
+
+
+    public void setUserDefaultImage(User user) {
+        user.setImage(defaultUserImagePath);
+    }
 
     public String loadImage(MultipartFile uploadImage, String fileDirectory, String fileName) throws IOException {
         if (!Objects.equals(uploadImage.getOriginalFilename(), "")) {
@@ -58,7 +68,9 @@ public class ImageUtil {
 
     public void deleteFile(String path) throws IOException {
         File file = new File(uploadPath + path);
-        if (!file.delete()) throw new IOException();
-    }
+        if (!file.isDirectory()) {
+            if (!file.delete()) throw new IOException();
+        } else FileUtils.deleteDirectory(file);
 
+    }
 }

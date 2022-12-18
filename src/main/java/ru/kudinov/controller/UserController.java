@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.kudinov.model.Car;
 import ru.kudinov.model.User;
 import ru.kudinov.service.CarService;
+import ru.kudinov.service.RequestService;
 import ru.kudinov.service.UserService;
 import ru.kudinov.util.ImageUtil;
 
@@ -25,92 +26,122 @@ public class UserController {
     private final CarService carService;
     private final UserService userService;
     private final ImageUtil imageUtil;
+    private final RequestService requestService;
 
     @Value("${user.file-directory}")
     private String userFileDirectory;
 
-    public UserController(CarService carService, UserService userService, ImageUtil imageUtil) {
+    public UserController(CarService carService, UserService userService, ImageUtil imageUtil, RequestService requestService) {
         this.carService = carService;
         this.userService = userService;
         this.imageUtil = imageUtil;
+        this.requestService = requestService;
     }
 
-    @GetMapping("{user}")
+    // TODO: сделать сброс пароля для админа
+    @GetMapping("{userFromPath}")
     public String getPersonalAccount(Model model, @AuthenticationPrincipal User authUser,
-                                     @PathVariable(required = false) User user) {
+                                     @PathVariable(required = false) User userFromPath) {
 
-        if (user == null || !user.getId().equals(authUser.getId())) {
+        if (authUser == null || userFromPath == null) return "redirect:/";
+
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
             return "redirect:/user/" + authUser.getId();
         }
+        if ((!userFromPath.getId().equals(authUser.getId()) && authUser.isAdmin())) {
+            model.addAttribute("adminOnUserPage", true);
+        }
 
-        Iterable<Car> cars = carService.findByOwner(authUser);
+        Iterable<Car> cars = carService.findByOwner(userFromPath);
 
         model.addAttribute("cars", cars);
-        model.addAttribute("user", authUser);
+        model.addAttribute("user", userFromPath);
+        model.addAttribute("authUser", authUser);
+        model.addAttribute("requests", requestService.findAllRequestsWithoutNotConf(userFromPath));
 
         return "personalAccount";
     }
 
-    @PostMapping("addCar")
+    @PostMapping("{userFromPath}/addCar")
     public String addCar(@ModelAttribute Car car,
+                         @PathVariable(required = false) User userFromPath,
                          @AuthenticationPrincipal User authUser,
                          RedirectAttributes redirectAttributes) {
 
-        car.setOwner(authUser);
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
+            return "redirect:/user/" + authUser.getId();
+        }
+
+        car.setOwner(userFromPath);
         car.setRegistrationNumber(car.getRegistrationNumber().toUpperCase());
 
         if (!carService.isCarDataCorrectly(car)) {
             redirectAttributes.addFlashAttribute("message", "Некорректный регистрационный номер автомобиля");
             redirectAttributes.addFlashAttribute("carToAdd", car);
-            return "redirect:" + authUser.getId();
+            return "redirect:/user/" + userFromPath.getId();
         }
         if (!carService.saveCar(car)) {
             redirectAttributes.addFlashAttribute("message", "Автомобиль с данным регистрационым номером уже добавлен");
             redirectAttributes.addFlashAttribute("carToAdd", car);
-            return "redirect:" + authUser.getId();
+            return "redirect:/user/" + userFromPath.getId();
         }
 
         redirectAttributes.addFlashAttribute("message", "Автомобиль успешно добавлен");
-        return "redirect:" + authUser.getId();
+        return "redirect:/user/" + userFromPath.getId();
     }
 
-    @GetMapping("deleteCar/{car}")
-    public String deleteCar(@PathVariable Car car,
-                            @AuthenticationPrincipal User user,
+    @GetMapping("{userFromPath}/deleteCar/{car}")
+    public String deleteCar(@PathVariable(required = false) Car car,
+                            @PathVariable(required = false) User userFromPath,
+                            @AuthenticationPrincipal User authUser,
                             RedirectAttributes redirectAttributes) {
+
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
+            return "redirect:/user/" + authUser.getId();
+        }
 
         if (!carService.deleteCar(car)) {
             redirectAttributes.addFlashAttribute("message", "Неизвестная ошибка");
         } else redirectAttributes.addFlashAttribute("message", "Машина успешно удалена");
 
-        return "redirect:/user/" + user.getId();
+        return "redirect:/user/" + userFromPath.getId();
     }
 
-    @GetMapping("editCar/{car}")
+    @GetMapping("{userFromPath}/editCar/{car}")
     public String getCarEditPage(Model model, @PathVariable(required = false) Car car,
-                                 @AuthenticationPrincipal User user) {
+                                 @PathVariable(required = false) User userFromPath,
+                                 @AuthenticationPrincipal User authUser) {
 
-        if (car == null || !carService.findByOwner(user).contains(car)) {
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
+            return "redirect:/user/" + authUser.getId();
+        }
+
+        if (car == null || !carService.findByOwner(userFromPath).contains(car)) {
             model.addAttribute("message", "У Вас нет доступа к данному автомобилю");
             model.addAttribute("car", new Car());
-            model.addAttribute("user", user);
+            model.addAttribute("user", userFromPath);
             return "editCar";
         }
 
         model.addAttribute("car", car);
-        model.addAttribute("user", user);
+        model.addAttribute("user", userFromPath);
 
         return "editCar";
     }
 
-    @PostMapping("editCar/{car}")
+    @PostMapping("{userFromPath}/editCar/{car}")
     public String editCar(Model model, @ModelAttribute Car carToChange,
-                          @AuthenticationPrincipal User user) {
+                          @PathVariable(required = false) User userFromPath,
+                          @AuthenticationPrincipal User authUser) {
+
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
+            return "redirect:/user/" + authUser.getId();
+        }
 
         model.addAttribute("car", carToChange);
-        model.addAttribute("user", user);
+        model.addAttribute("user", userFromPath);
 
-        if (!carService.findByOwner(user).contains(carToChange)) {
+        if (!carService.findByOwner(userFromPath).contains(carToChange)) {
             model.addAttribute("message", "У Вас нет прав на редактирование данного автомобиля");
             return "editCar";
         }
@@ -125,28 +156,31 @@ public class UserController {
         return "editCar";
     }
 
-    @GetMapping("{user}-changePassword")
-    public String getChangePasswordPage(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
+    @GetMapping("{userFromPath}-changePassword")
+    public String getChangePasswordPage(Model model, @AuthenticationPrincipal User authUser,
+                                        @PathVariable(required = false) User userFromPath) {
 
-        if (user == null || !user.getId().equals(authUser.getId())) {
-            return "redirect:" + authUser.getId() + "-changePassword";
+        if (authUser == null || userFromPath == null) return "redirect:/";
+
+        if ((!userFromPath.getId().equals(authUser.getId()))) {
+            return "redirect:/user/" + authUser.getId();
         }
 
-        model.addAttribute("user", authUser);
+        model.addAttribute("user", userFromPath);
 
         return "changePassword";
     }
 
-    @PostMapping("{user}-changePassword")
+    @PostMapping("{userFromPath}-changePassword")
     public String changePassword(Model model, @AuthenticationPrincipal User authUser,
                                  @RequestParam(name = "oldPassword") String oldPassword,
                                  @RequestParam(name = "newPassword") String newPassword,
                                  @RequestParam(name = "passwordConfirm") String passwordConfirm,
-                                 @PathVariable(required = false) User user) {
+                                 @PathVariable(required = false) User userFromPath) {
 
         model.addAttribute("user", authUser);
 
-        if (user == null || !user.getId().equals(authUser.getId())) {
+        if (userFromPath == null || !userFromPath.getId().equals(authUser.getId())) {
             return "redirect:" + authUser.getId() + "-changePassword";
         }
 
@@ -173,63 +207,69 @@ public class UserController {
         return "changePassword";
     }
 
-    @GetMapping("{user}-changeLogin")
-    public String getChangeLoginPage(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User user) {
+    @GetMapping("{userFromPath}-changeLogin")
+    public String getChangeLoginPage(Model model, @AuthenticationPrincipal User authUser, @PathVariable(required = false) User userFromPath) {
 
-        if (user == null || !user.getId().equals(authUser.getId())) {
+        if (authUser == null || userFromPath == null) return "redirect:/";
+
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
             return "redirect:" + authUser.getId() + "-changeLogin";
         }
 
-        model.addAttribute("user", authUser);
+        model.addAttribute("user", userFromPath);
 
         return "changeLogin";
     }
 
-    @PostMapping("{user}-changeLogin")
-    public String changeLogin(Model model, @AuthenticationPrincipal User authUser,
-                              @RequestParam(name = "newLogin") String newLogin,
-                              @PathVariable(required = false) User user) {
+    @PostMapping("{userFromPath}-changeLogin")
+    public String changeLogin(Model model, @PathVariable(required = false) User userFromPath,
+                              @AuthenticationPrincipal User authUser,
+                              @RequestParam(name = "newLogin") String newLogin) {
 
-        model.addAttribute("user", authUser);
+        if (authUser == null || userFromPath == null) return "redirect:/";
 
-        if (user == null || !user.getId().equals(authUser.getId())) {
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
             return "redirect:" + authUser.getId() + "-changeLogin";
         }
 
-        if (!userService.changeLogin(authUser, newLogin)) {
+        model.addAttribute("user", userFromPath);
+
+        if (!userService.changeLogin(userFromPath, newLogin)) {
             model.addAttribute("message", "Логин занят");
             model.addAttribute("newLogin", newLogin);
             return "changeLogin";
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(authUser, authUser.getPassword(), authUser.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (userFromPath.getId().equals(authUser.getId())) {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(authUser, authUser.getPassword(), authUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
 
         model.addAttribute("message", "Логин успешно изменён");
 
         return "changeLogin";
     }
 
-    @GetMapping("{user}-edit")
+    @GetMapping("{userFromPath}-edit")
     public String getUserEditPage(Model model, @AuthenticationPrincipal User authUser,
-                                  @PathVariable(required = false) User user) {
+                                  @PathVariable(required = false) User userFromPath) {
 
-        if (user == null || !user.getId().equals(authUser.getId())) {
-            return "redirect:" + authUser.getId() + "-edit";
+        if (userFromPath == null || !userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin()) {
+            return "redirect:/user/" + authUser.getId() + "-edit";
         }
-        model.addAttribute("user", authUser);
+        model.addAttribute("user", userFromPath);
 
         return "editUser";
     }
 
     //TODO добавление почты
     @PostMapping("{user}-edit")
-    public String editUser(Model model, @AuthenticationPrincipal User user,
+    public String editUser(Model model, @AuthenticationPrincipal User authUser,
                            @ModelAttribute User changeUser) {
 
         model.addAttribute("user", changeUser);
 
-        if (!changeUser.getId().equals(user.getId())) {
+        if (!changeUser.getId().equals(authUser.getId()) && !authUser.isAdmin()) {
             model.addAttribute("message", "У Вас нет прав для редактирования данного пользователя");
             return "editUser";
         }
@@ -240,25 +280,60 @@ public class UserController {
             return "editUser";
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(changeUser, changeUser.getPassword(), changeUser.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (changeUser.getId().equals(authUser.getId())) {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(changeUser, changeUser.getPassword(), changeUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
         model.addAttribute("message", "Изменения успешно сохранены");
 
         return "editUser";
     }
 
-    @PostMapping("{user}-changeImage")
-    public String changeImage(Model model, @AuthenticationPrincipal User user,
+    @PostMapping("{userFromPath}-changeImage")
+    public String changeImage(Model model, @AuthenticationPrincipal User authUser,
+                              @PathVariable User userFromPath,
                               @RequestParam(value = "uploadImage", required = false) MultipartFile uploadImage) throws IOException {
 
-        String fileName = "user_" + user.getId() + "_profileImage.png";
-        user.setImage(imageUtil.loadImage(uploadImage, userFileDirectory, fileName));
-        userService.updateUser(user);
+        if (authUser == null || userFromPath == null) return "redirect:/";
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
+            return "redirect:/user/" + authUser.getId();
+        }
+
+        String fileName = "user_" + userFromPath.getId() + "_profileImage.png";
+        userFromPath.setImage(imageUtil.loadImage(uploadImage, userFileDirectory, fileName));
+        userService.updateUser(userFromPath);
+
+        if (userFromPath.getId().equals(authUser.getId())) {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(authUser, authUser.getPassword(), authUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
         model.addAttribute("message", "Фото изменено");
 
-        return "redirect:/user/{user}";
+        return "redirect:/user/{userFromPath}";
+    }
+
+    @GetMapping("{userFromPath}-deleteImage")
+    public String deleteImage(@AuthenticationPrincipal User authUser,
+                              @PathVariable User userFromPath) throws IOException {
+
+        if (authUser == null || userFromPath == null) return "redirect:/";
+
+        if ((!userFromPath.getId().equals(authUser.getId()) && !authUser.isAdmin())) {
+            return "redirect:/user/" + authUser.getId();
+        }
+
+        imageUtil.deleteFile(userFromPath.getImage());
+        imageUtil.setUserDefaultImage(userFromPath);
+        userService.updateUser(userFromPath);
+
+        if (userFromPath.getId().equals(authUser.getId())) {
+            Authentication authentication = new UsernamePasswordAuthenticationToken(authUser, authUser.getPassword(), authUser.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        return "redirect:/user/{userFromPath}";
     }
 }

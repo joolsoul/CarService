@@ -161,4 +161,20 @@ public class User implements UserDetails {
     public boolean isAdmin() {
         return getRoles().contains(Role.ADMIN);
     }
+
+    public Set<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(Set<Request> requests) {
+        this.requests = requests;
+    }
+
+    public Set<Car> getCars() {
+        return cars;
+    }
+
+    public void setCars(Set<Car> cars) {
+        this.cars = cars;
+    }
 }

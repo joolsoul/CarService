@@ -32,18 +32,26 @@ public class ServService {
 
         ru.kudinov.model.Service serviceFromDb = getByName(service.getName());
 
-        if (serviceFromDb != null) {
+        if (serviceFromDb != null && serviceFromDb.isActive()) {
             return false;
         }
+        if (serviceFromDb != null && !serviceFromDb.isActive()) {
+            serviceFromDb.setActive();
+            serviceFromDb.setServiceType(service.getServiceType());
+            serviceFromDb.setPrice(service.getPrice());
+            serviceRepository.save(serviceFromDb);
+            return true;
+        }
 
+        service.setActive();
         serviceRepository.save(service);
         return true;
     }
 
     public boolean deleteService(ru.kudinov.model.Service service) {
         if (serviceRepository.findById(service.getId()).isPresent()) {
-            serviceRepository.deleteById(service.getId());
-
+            service.setNonActive();
+            serviceRepository.save(service);
             return true;
         }
         return false;
@@ -54,11 +62,15 @@ public class ServService {
     }
 
     public List<ru.kudinov.model.Service> allServices() {
-        return serviceRepository.findAll();
+        return serviceRepository.findAllByIsActive(true);
+    }
+
+    public List<ru.kudinov.model.Service> getNonActiveServices() {
+        return serviceRepository.findAllByIsActive(false);
     }
 
     public List<ru.kudinov.model.Service> findByServiceType(ServiceType serviceType) {
-        return serviceRepository.findByServiceType(serviceType);
+        return serviceRepository.findByServiceTypeAndIsActive(serviceType, true);
     }
 
     public boolean isDataCorrectly(ru.kudinov.model.Service service) {

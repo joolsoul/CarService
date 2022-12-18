@@ -14,6 +14,7 @@
     <h1 class="auth-title" th:text="'Заказ №' + ${request?.id}"></h1>
 
     <div>
+
         <p th:text="'Дата заказа: ' + ${request?.orderDate}"></p>
 
         <div>
@@ -60,6 +61,11 @@
         <p th:text="'Статус: ' + ${request?.requestStatus?.value}"></p>
         <p th:text="'Итоговая стоимость: ' + ${request?.cost}"></p>
     </div>
+    <a th:if="${authUser?.isAdmin()} and ${!request.isRequestCancelled()}"
+       th:href="@{/admin/applyRequest/__${request?.id}__}">Принять заказ</a>
+    <a th:if="${authUser?.isAdmin()} and ${!request.isRequestCancelled()}"
+       th:href="@{/cancelRequest/__${request?.id}__}">Отменить заказ</a>
+    <a th:if="${authUser.isAdmin()}" th:href="@{/admin/deleteRequest/__${request.id}__}">Удалить заказ</a>
 </div>
 </body>
 </html>

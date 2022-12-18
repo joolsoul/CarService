@@ -1,12 +1,11 @@
 package ru.kudinov.model.enums;
 
-public enum Post {
-    EMPLOYEE("Работник"),
-    INTERN("Стажёр");
+public enum EmployeeWorkSchedule {
+    FOUR_TWO("4/2");
 
     private final String value;
 
-    Post(String value) {
+    EmployeeWorkSchedule(String value) {
         this.value = value;
     }
 

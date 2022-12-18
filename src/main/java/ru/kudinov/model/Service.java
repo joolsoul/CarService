@@ -24,6 +24,8 @@ public class Service implements Producible {
     @Transient
     private final ProductKind PRODUCT_KIND = ProductKind.SERVICE;
 
+    private boolean isActive;
+
     public Long getId() {
         return id;
     }
@@ -63,5 +65,17 @@ public class Service implements Producible {
     @Override
     public ProducibleType getProductType() {
         return getServiceType();
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive() {
+        this.isActive = true;
+    }
+
+    public void setNonActive() {
+        this.isActive = false;
     }
 }

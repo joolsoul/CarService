@@ -1,9 +1,8 @@
 package ru.kudinov.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import ru.kudinov.model.enums.ServOrgWorkSchedule;
+
+import javax.persistence.*;
 
 @Entity
 public class ServiceOrganization {
@@ -13,6 +12,13 @@ public class ServiceOrganization {
     private Long id;
 
     private String address;
+
+    private String phoneNumber;
+
+    @Enumerated(EnumType.STRING)
+    private ServOrgWorkSchedule servOrgWorkSchedule;
+
+    private boolean isActive;
 
     public Long getId() {
         return id;
@@ -28,5 +34,33 @@ public class ServiceOrganization {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive() {
+        this.isActive = true;
+    }
+
+    public void setNonActive() {
+        this.isActive = false;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public ServOrgWorkSchedule getServOrgWorkSchedule() {
+        return servOrgWorkSchedule;
+    }
+
+    public void setServOrgWorkSchedule(ServOrgWorkSchedule servOrgWorkSchedule) {
+        this.servOrgWorkSchedule = servOrgWorkSchedule;
     }
 }

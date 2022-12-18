@@ -1,7 +1,8 @@
 package ru.kudinov.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import ru.kudinov.model.enums.EmployeeWorkSchedule;
 import ru.kudinov.model.enums.Post;
-import ru.kudinov.model.enums.WorkSchedule;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -23,6 +24,7 @@ public class Employee {
     private String address;
 
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthdate;
 
     @Enumerated(EnumType.STRING)
@@ -31,7 +33,7 @@ public class Employee {
     private Integer workExperience; //in Days
 
     @Enumerated(EnumType.STRING)
-    private WorkSchedule workSchedule;  //график работы
+    private EmployeeWorkSchedule employeeWorkSchedule;  //график работы
 
     private Integer salary; // оклад
 
@@ -41,6 +43,7 @@ public class Employee {
 
     private String image;
 
+    private boolean isActive;
 
     public Employee() {
     }
@@ -113,12 +116,12 @@ public class Employee {
         this.workExperience = workExperience;
     }
 
-    public WorkSchedule getWorkSchedule() {
-        return workSchedule;
+    public EmployeeWorkSchedule getEmployeeWorkSchedule() {
+        return employeeWorkSchedule;
     }
 
-    public void setWorkSchedule(WorkSchedule workSchedule) {
-        this.workSchedule = workSchedule;
+    public void setEmployeeWorkSchedule(EmployeeWorkSchedule employeeWorkSchedule) {
+        this.employeeWorkSchedule = employeeWorkSchedule;
     }
 
     public Integer getSalary() {
@@ -127,6 +130,7 @@ public class Employee {
 
     public void setSalary(Integer salary) {
         this.salary = salary;
+        setWages();
     }
 
     public Integer getSeniorityAllowance() {
@@ -135,14 +139,19 @@ public class Employee {
 
     public void setSeniorityAllowance(Integer seniorityAllowance) {
         this.seniorityAllowance = seniorityAllowance;
+        setWages();
     }
 
     public Integer getWages() {
-        return wages;
+        return this.salary + this.seniorityAllowance;
     }
 
     public void setWages(Integer wages) {
         this.wages = wages;
+    }
+
+    private void setWages() {
+        if (this.seniorityAllowance != null && this.salary != null) this.wages = this.salary + this.seniorityAllowance;
     }
 
     public void setId(Long id) {
@@ -155,5 +164,17 @@ public class Employee {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive() {
+        this.isActive = true;
+    }
+
+    public void setNonActive() {
+        this.isActive = false;
     }
 }

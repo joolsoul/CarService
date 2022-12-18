@@ -18,7 +18,7 @@ public class DetailService {
     }
 
     public List<Detail> findByDetailType(DetailType detailType) {
-        return detailRepository.findByDetailType(detailType);
+        return detailRepository.findByDetailTypeAndIsActive(detailType, true);
     }
 
     public Detail getByName(String name) {
@@ -36,22 +36,37 @@ public class DetailService {
 
         Detail detailFromDb = getByName(detail.getName());
 
-        if (detailFromDb != null) {
+        if (detailFromDb != null && detailFromDb.isActive()) {
             return false;
         }
+        if (detailFromDb != null && !detailFromDb.isActive()) {
+            detailFromDb.setActive();
+            detailFromDb.setDetailType(detail.getDetailType());
+            detailFromDb.setImages(detail.getImages());
+            detailFromDb.setQuantity(detail.getQuantity());
+            detailFromDb.setDescription(detail.getDescription());
+            detailFromDb.setPrice(detailFromDb.getPrice());
+            detailRepository.save(detailFromDb);
+            return true;
+        }
 
+        detail.setActive();
         detailRepository.save(detail);
         return true;
     }
 
     public List<Detail> allDetails() {
-        return detailRepository.findAll();
+        return detailRepository.findAllByIsActive(true);
+    }
+
+    public List<Detail> getNonActiveDetails() {
+        return detailRepository.findAllByIsActive(false);
     }
 
     public boolean deleteDetail(Detail detail) {
         if (detailRepository.findById(detail.getId()).isPresent()) {
-            detailRepository.deleteById(detail.getId());
-
+            detail.setNonActive();
+            detailRepository.save(detail);
             return true;
         }
         return false;

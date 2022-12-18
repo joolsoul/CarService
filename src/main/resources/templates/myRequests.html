@@ -28,6 +28,12 @@
             <li th:utext="${request?.cost}">..</li>
             <li th:utext="${request?.requestStatus?.value.toUpperCase()}">..</li>
         </a>
+
+        <a th:if="${authUser?.isAdmin()} and ${!request.isRequestCancelled()}"
+           th:href="@{/admin/applyRequest/__${request?.id}__}">Принять заказ</a>
+        <a th:if="${authUser?.isAdmin()} and ${!request.isRequestCancelled()}"
+           th:href="@{/cancelRequest/__${request?.id}__}">Отменить заказ</a>
+        <a th:if="${authUser.isAdmin()}" th:href="@{/admin/deleteRequest/__${request.id}__}">Удалить заказ</a>
         <p>-------------------</p>
 
     </th:block>

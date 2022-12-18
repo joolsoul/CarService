@@ -41,9 +41,9 @@ public class CartController {
                               HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         cartUtil.createUserCart(model, user, httpRequest, httpResponse);
-        model.addAttribute("employees", employeeService.getEmployees());
+        model.addAttribute("employees", employeeService.allEmployees());
         if (user != null) model.addAttribute("userCars", carService.findByOwner(user));
-        model.addAttribute("services", servOrganizationService.getServiceOrganizations());
+        model.addAttribute("services", servOrganizationService.allServiceOrganizations());
 
         return "cart";
     }
