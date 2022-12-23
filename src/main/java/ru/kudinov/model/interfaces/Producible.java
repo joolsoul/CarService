@@ -1,6 +1,6 @@
 package ru.kudinov.model.interfaces;
 
-import ru.kudinov.model.enums.ProductKind;
+import ru.kudinov.model.enums.entityEnums.ProductKind;
 
 public interface Producible {
 

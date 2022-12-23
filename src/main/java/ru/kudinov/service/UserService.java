@@ -1,23 +1,27 @@
 package ru.kudinov.service;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kudinov.model.User;
-import ru.kudinov.model.enums.Role;
+import ru.kudinov.model.enums.entityEnums.Role;
 import ru.kudinov.repository.UserRepository;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final String REGEX = "^\\d{1}-?\\d{3}-?\\d{3}-?\\d{2}-?\\d{2}$";
 
     public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
@@ -40,8 +44,12 @@ public class UserService implements UserDetailsService {
         return userFromDb.orElse(new User());
     }
 
-    public List<User> allUsers() {
-        return userRepository.findAll();
+    public Page<User> findUsersByExample(Example<User> exampleUser, Pageable pageable) {
+        return userRepository.findAll(exampleUser, pageable);
+    }
+
+    public Page<User> allUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public boolean saveUser(User user) {
@@ -66,15 +74,16 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    //TODO Проверка номера телефона по регулярке
     public boolean isUserCorrectlyUpdate(User user) {
         return !user.getName().trim().isEmpty() && !user.getSurname().trim().isEmpty() &&
-                !user.getPatronymic().trim().isEmpty() && !user.getPhoneNumber().trim().isEmpty();
+                !user.getPatronymic().trim().isEmpty() && !user.getPhoneNumber().trim().isEmpty() &&
+                Pattern.matches(REGEX, user.getPhoneNumber().trim());
     }
 
     public boolean isUserCorrectly(User user) {
         return !user.getName().equals("") && !user.getSurname().equals("") &&
                 !user.getPatronymic().equals("") && !user.getPhoneNumber().equals("") &&
+                Pattern.matches(REGEX, user.getPhoneNumber()) &&
                 !user.getUsername().equals("") && !user.getPassword().equals("");
     }
 

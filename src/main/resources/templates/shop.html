@@ -23,15 +23,15 @@
         <ul>
             <th:block th:each="detail : ${detailsElement.value}">
 
-                <div th:each="path : ${detail?.images}">
-                    <img th:src="@{/img/__${path}__}" alt="Нажмите для выбора файла." width="50px" height="50px">
-                </div>
-                <li th:utext="${detail?.name}">..</li>
-                <li th:utext="'Количество: ' + ${detail?.quantity}">..</li>
-                <li th:utext="${detail?.price}">..</li>
-                <li th:utext="${detail?.description}">..</li>
-                <li th:utext="${detailsElement?.key}">..</li>
-                <li th:utext="${detail?.id}">..</li>
+                <a th:href="@{/shop/__${detail.id}__}">
+                    <img th:src="@{/img/__${detail?.images[0]}__}" alt="Нажмите для выбора файла." width="50px"
+                         height="50px">
+                    <li th:utext="${detail?.name}">..</li>
+                    <li th:utext="'Количество: ' + ${detail?.quantity}">..</li>
+                    <li th:utext="${detail?.price}">..</li>
+                    <li th:utext="${detail.detailType.getValue()}">..</li>
+                    <li th:utext="${detail?.id}">..</li>
+                </a>
 
                 <form th:action="@{/shop/__${detail?.id}__}" method="post">
                     <div class="count">
@@ -55,6 +55,6 @@
     </th:block>
 </ul>
 
-<script src="/./static/js/main.js"></script>
+<script src="/js/productCounter.js"></script>
 </body>
 </html>

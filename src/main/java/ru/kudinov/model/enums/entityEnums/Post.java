@@ -1,4 +1,4 @@
-package ru.kudinov.model.enums;
+package ru.kudinov.model.enums.entityEnums;
 
 public enum Post {
     EMPLOYEE("Работник"),

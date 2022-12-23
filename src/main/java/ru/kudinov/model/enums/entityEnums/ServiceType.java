@@ -1,14 +1,15 @@
-package ru.kudinov.model.enums;
+package ru.kudinov.model.enums.entityEnums;
 
 import ru.kudinov.model.interfaces.ProducibleType;
 
-public enum DetailType implements ProducibleType {
-    ENGINE("Двигатель"),
-    TRANSMISSION("Коробка передач");
+public enum ServiceType implements ProducibleType {
+    DIAGNOSTICS("Диагностика"),
+    MAINTENANCE("Обслуживание"),
+    REPAIR("Ремонт");
 
     private String value;
 
-    DetailType(String value) {
+    ServiceType(String value) {
         this.value = value;
     }
 

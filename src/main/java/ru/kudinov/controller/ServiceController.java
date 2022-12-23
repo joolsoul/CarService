@@ -10,7 +10,7 @@ import ru.kudinov.model.Request;
 import ru.kudinov.model.Service;
 import ru.kudinov.model.ServiceRequest;
 import ru.kudinov.model.User;
-import ru.kudinov.model.enums.ServiceType;
+import ru.kudinov.model.enums.entityEnums.ServiceType;
 import ru.kudinov.service.RequestService;
 import ru.kudinov.service.ServRequestService;
 import ru.kudinov.service.ServService;

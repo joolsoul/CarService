@@ -1,7 +1,7 @@
 package ru.kudinov.model;
 
-import ru.kudinov.model.enums.DetailType;
-import ru.kudinov.model.enums.ProductKind;
+import ru.kudinov.model.enums.entityEnums.DetailType;
+import ru.kudinov.model.enums.entityEnums.ProductKind;
 import ru.kudinov.model.interfaces.Producible;
 import ru.kudinov.model.interfaces.ProducibleType;
 

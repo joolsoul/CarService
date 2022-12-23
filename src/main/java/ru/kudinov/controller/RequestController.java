@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import ru.kudinov.model.Car;
 import ru.kudinov.model.Request;
 import ru.kudinov.model.User;
-import ru.kudinov.model.enums.RequestStatus;
+import ru.kudinov.model.enums.entityEnums.RequestStatus;
 import ru.kudinov.service.CarService;
 import ru.kudinov.service.DetailRequestService;
 import ru.kudinov.service.RequestService;
@@ -49,13 +49,12 @@ public class RequestController {
         return "myRequests";
     }
 
-    //TODO: добавить ссылку на деталь из заказа в магазине
     @GetMapping("/getRequest/{request}")
     public String getRequestPage(@AuthenticationPrincipal User user, @PathVariable(required = false) Request request, Model model) {
 
         if (request == null || (!carService.findByOwner(user).contains(request.getCar()) && !user.isAdmin())) {
             model.addAttribute("message", "У Вас нет доступа к данному заказу");
-            return "carRequest";
+            return "request";
         }
 
         model.addAttribute("user", request.getUser());
@@ -66,7 +65,7 @@ public class RequestController {
         model.addAttribute("request", request);
 
 
-        return "carRequest";
+        return "request";
     }
 
     @GetMapping("/admin/applyRequest/{request}")

@@ -1,6 +1,10 @@
 package ru.kudinov.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,10 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.kudinov.model.*;
-import ru.kudinov.model.enums.*;
+import ru.kudinov.model.enums.entityEnums.*;
+import ru.kudinov.model.enums.searchEnums.UserSearchType;
+import ru.kudinov.model.enums.sortEnums.UserSortType;
 import ru.kudinov.service.*;
 import ru.kudinov.util.ImageUtil;
+import ru.kudinov.util.PaginationUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +36,7 @@ public class AdminController {
     private final ServOrganizationService servOrganizationService;
     private final EmployeeService employeeService;
     private final ImageUtil imageUtil;
+    private final PaginationUtil paginationUtil;
 
     @Value("${detail.file-directory}")
     private String detailFileDirectory;
@@ -42,9 +51,8 @@ public class AdminController {
     private String defaultUserImagePath;
 
     public AdminController(UserService userService, DetailService detailService, RequestService requestService,
-                           ServService servService,
-                           ServOrganizationService servOrganizationService, EmployeeService employeeService,
-                           ImageUtil imageUtil) {
+                           ServService servService, ServOrganizationService servOrganizationService,
+                           EmployeeService employeeService, ImageUtil imageUtil, PaginationUtil paginationUtil) {
         this.userService = userService;
         this.detailService = detailService;
         this.requestService = requestService;
@@ -52,14 +60,54 @@ public class AdminController {
         this.servOrganizationService = servOrganizationService;
         this.employeeService = employeeService;
         this.imageUtil = imageUtil;
+        this.paginationUtil = paginationUtil;
     }
 
-
     @GetMapping("getUsers")
-    public String getUserListPage(Model model, @AuthenticationPrincipal User user) {
+    public String getUserListPage(Model model, @AuthenticationPrincipal User user,
+                                  @RequestParam(name = "page", defaultValue = "0") String pageNumber,
+                                  @RequestParam(defaultValue = "0", required = false) String userSearchTypeOrd,
+                                  @RequestParam(required = false) String userSearchInfo,
+                                  HttpServletRequest request) {
 
-        model.addAttribute("users", userService.allUsers());
+        UserSortType userSortType = UserSortType.ID_DESC;
+
+        Pageable pageable = paginationUtil.createPageable(pageNumber, userSortType);
+
+        Page<User> userPage;
+
+        if (userSearchInfo == null || userSearchInfo.equals("")) userPage = userService.allUsers(pageable);
+        else {
+            User userExample = new User();
+
+            switch (UserSearchType.values()[Integer.parseInt(userSearchTypeOrd)]) {
+                case ID -> userExample.setId(Long.parseLong(userSearchInfo));
+                case USERNAME -> userExample.setUsername(userSearchInfo);
+                case NAME -> userExample.setName(userSearchInfo);
+                case SURNAME -> userExample.setSurname(userSearchInfo);
+                case PATRONYMIC -> userExample.setPatronymic(userSearchInfo);
+                case SNP -> {
+                    String[] userInfo = userSearchInfo.split(" ");
+                    userExample.setSurname(userInfo[0]);
+                    userExample.setName(userInfo[1]);
+                    userExample.setPatronymic(userInfo[2]);
+                }
+                case EMAIL -> userExample.setEmail(userSearchInfo);
+                case PHONE_NUMBER -> userExample.setPhoneNumber(userSearchInfo);
+            }
+
+            ExampleMatcher matcher = ExampleMatcher.matchingAll().withIgnoreCase();
+            Example<User> example = Example.of(userExample, matcher);
+
+            userPage = userService.findUsersByExample(example, pageable);
+        }
+
+        paginationUtil.addPaginationInModel(model, "userPage", userPage, request);
+
         model.addAttribute("user", user);
+        model.addAttribute("userSearchTypes", UserSearchType.values());
+        model.addAttribute("currentUserSearchType", UserSearchType.values()[Integer.parseInt(userSearchTypeOrd)]);
+        model.addAttribute("currentUserSearchInfo", userSearchInfo);
 
         return "getUsers";
     }
@@ -347,6 +395,8 @@ public class AdminController {
         return "redirect:/admin/getEmployees";
     }
 
+
+    //TODO удаление фото работника
     @GetMapping("addEmployee")
     public String getAddEmployeePage(Model model, @AuthenticationPrincipal User user) {
 
@@ -456,14 +506,5 @@ public class AdminController {
         redirectAttributes.addFlashAttribute("message", "Автосервис успешно добавлен");
         return "redirect:/admin/getServiceOrganizations";
     }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-//TODO: Сделать отображения информации о конкретном пользователе, основываясь на pathVariable
-//TODO: редактирование машин, информации о пользователе и его прав
-//    @GetMapping("/user/{user}")
-//    public String getUserPage(Model model, @PathVariable String user) {
-//        return "index";
-//    }
 
 }

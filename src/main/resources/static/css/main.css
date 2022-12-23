@@ -15,7 +15,6 @@ p {
 .container {
     max-width: 1200px;
     margin: auto;
-    font-family: 'Roboto', sans-serif;
 }
 
 .user-item {
@@ -33,7 +32,6 @@ p {
     padding: 10px;
 
 }
-
 
 .user-info {
     display: flex;
@@ -69,5 +67,37 @@ p {
 
     color: inherit;
 }
+
+.button-size {
+    height: 41px;
+}
+
+.nav-link {
+    color: inherit;
+}
+
+.user-image {
+    border: 2px solid #ffc107;
+    width: 38px;
+    height: 38px;
+    border-radius: 15px;
+}
+
+.user-image:hover {
+    border: 2px solid #f8f9fa;
+}
+
+.logo {
+    color: #ffc107;
+}
+
+.logo:hover {
+    color: #f8f9fa;
+}
+
+.cart-image:hover {
+    color: #ffc107;
+}
+
 
 

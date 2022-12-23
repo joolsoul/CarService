@@ -1,10 +1,12 @@
 package ru.kudinov.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.kudinov.model.Car;
 import ru.kudinov.model.Request;
 import ru.kudinov.model.User;
-import ru.kudinov.model.enums.RequestStatus;
+import ru.kudinov.model.enums.entityEnums.RequestStatus;
 import ru.kudinov.repository.RequestRepository;
 
 import java.util.List;
@@ -44,8 +46,12 @@ public class RequestService {
         return requests.get(0);
     }
 
-    public List<Request> findAllRequestsWithoutNotConf(User user) {
-        return requestRepository.findByUserAndRequestStatusNot(user, RequestStatus.NOT_CONFIRMED);
+    public Page<Request> findRequestsByStatus(User user, RequestStatus requestStatus, Pageable pageable) {
+        return requestRepository.findByUserAndRequestStatus(user, requestStatus, pageable);
+    }
+
+    public Page<Request> findAllRequestsWithoutNotConf(User user, Pageable pageable) {
+        return requestRepository.findByUserAndRequestStatusNot(user, RequestStatus.NOT_CONFIRMED, pageable);
     }
 
     public List<Request> findAllRequests(User user) {

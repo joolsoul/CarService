@@ -19,6 +19,7 @@ public class MainController {
         this.cartUtil = cartUtil;
     }
 
+    //TODO сделать корзину offcanvas
     @GetMapping("/")
     public String greeting(Model model, @AuthenticationPrincipal User user,
                            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {

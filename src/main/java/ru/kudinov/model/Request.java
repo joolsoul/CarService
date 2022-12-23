@@ -1,7 +1,7 @@
 package ru.kudinov.model;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.kudinov.model.enums.RequestStatus;
+import ru.kudinov.model.enums.entityEnums.RequestStatus;
 
 import javax.persistence.*;
 import java.util.Date;

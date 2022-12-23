@@ -2,7 +2,7 @@ package ru.kudinov.util;
 
 import ru.kudinov.model.Detail;
 import ru.kudinov.model.Service;
-import ru.kudinov.model.enums.ProductKind;
+import ru.kudinov.model.enums.entityEnums.ProductKind;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

@@ -2,7 +2,7 @@ package ru.kudinov.service;
 
 
 import org.springframework.stereotype.Service;
-import ru.kudinov.model.enums.ServiceType;
+import ru.kudinov.model.enums.entityEnums.ServiceType;
 import ru.kudinov.repository.ServiceRepository;
 
 import java.util.List;

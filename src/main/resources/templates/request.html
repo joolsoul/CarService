@@ -28,10 +28,11 @@
         <ul>
 
             <th:block th:each="detailRequest : ${detailRequests}">
-
-                <li th:utext="'Название детали: ' + ${detailRequest?.detail?.name}">..</li>
-                <li th:utext="'Количество: ' + ${detailRequest?.quantity}">..</li>
-                <li th:utext="'Стоимость: ' + ${detailRequest?.price}">..</li>
+                <a th:href="@{/shop/__${detailRequest?.detail.id}__}">
+                    <li th:utext="'Название детали: ' + ${detailRequest?.detail?.name}">..</li>
+                    <li th:utext="'Количество: ' + ${detailRequest?.quantity}">..</li>
+                    <li th:utext="'Стоимость: ' + ${detailRequest?.price}">..</li>
+                </a>
                 <p>-------------------</p>
 
             </th:block>

@@ -2,7 +2,7 @@ package ru.kudinov.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.kudinov.model.Service;
-import ru.kudinov.model.enums.ServiceType;
+import ru.kudinov.model.enums.entityEnums.ServiceType;
 
 import java.util.List;
 

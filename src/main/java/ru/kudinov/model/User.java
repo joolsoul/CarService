@@ -1,9 +1,8 @@
 package ru.kudinov.model;
 
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.kudinov.model.enums.Role;
+import ru.kudinov.model.enums.entityEnums.Role;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -105,6 +104,14 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    public void deleteRole(Role role) {
+        this.roles.remove(role);
+    }
+
     public String getName() {
         return name;
     }
@@ -141,7 +148,7 @@ public class User implements UserDetails {
         return email;
     }
 
-    public void setEmail(@Nullable String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 

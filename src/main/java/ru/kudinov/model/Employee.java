@@ -1,8 +1,8 @@
 package ru.kudinov.model;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.kudinov.model.enums.EmployeeWorkSchedule;
-import ru.kudinov.model.enums.Post;
+import ru.kudinov.model.enums.entityEnums.EmployeeWorkSchedule;
+import ru.kudinov.model.enums.entityEnums.Post;
 
 import javax.persistence.*;
 import java.util.Date;

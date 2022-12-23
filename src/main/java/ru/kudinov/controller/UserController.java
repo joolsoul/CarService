@@ -1,6 +1,8 @@
 package ru.kudinov.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,13 +13,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.kudinov.model.Car;
+import ru.kudinov.model.Request;
 import ru.kudinov.model.User;
+import ru.kudinov.model.enums.entityEnums.RequestStatus;
+import ru.kudinov.model.enums.entityEnums.Role;
+import ru.kudinov.model.enums.sortEnums.RequestSortType;
 import ru.kudinov.service.CarService;
 import ru.kudinov.service.RequestService;
 import ru.kudinov.service.UserService;
 import ru.kudinov.util.ImageUtil;
+import ru.kudinov.util.PaginationUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -26,22 +36,31 @@ public class UserController {
     private final CarService carService;
     private final UserService userService;
     private final ImageUtil imageUtil;
+    private final PaginationUtil paginationUtil;
     private final RequestService requestService;
 
     @Value("${user.file-directory}")
     private String userFileDirectory;
 
-    public UserController(CarService carService, UserService userService, ImageUtil imageUtil, RequestService requestService) {
+    @Value("${default.user-image.path}")
+    private String defaultUserImagePath;
+
+    public UserController(CarService carService, UserService userService, ImageUtil imageUtil, PaginationUtil paginationUtil, RequestService requestService) {
         this.carService = carService;
         this.userService = userService;
         this.imageUtil = imageUtil;
+        this.paginationUtil = paginationUtil;
         this.requestService = requestService;
     }
 
     // TODO: сделать сброс пароля для админа
     @GetMapping("{userFromPath}")
     public String getPersonalAccount(Model model, @AuthenticationPrincipal User authUser,
-                                     @PathVariable(required = false) User userFromPath) {
+                                     @RequestParam(name = "page", defaultValue = "0") String pageNumber,
+                                     @PathVariable(required = false) User userFromPath,
+                                     @RequestParam(defaultValue = "0") String requestSortTypeOrd,
+                                     @RequestParam(defaultValue = "all") String requestStatusOrd,
+                                     HttpServletRequest request) {
 
         if (authUser == null || userFromPath == null) return "redirect:/";
 
@@ -52,12 +71,37 @@ public class UserController {
             model.addAttribute("adminOnUserPage", true);
         }
 
-        Iterable<Car> cars = carService.findByOwner(userFromPath);
+        RequestSortType requestSortType = RequestSortType.values()[Integer.parseInt(requestSortTypeOrd)];
 
-        model.addAttribute("cars", cars);
+        Pageable pageable = paginationUtil.createPageable(pageNumber, requestSortType);
+
+        Page<Request> requestPage = null;
+
+        if (requestStatusOrd.equals("all"))
+            requestPage = requestService.findAllRequestsWithoutNotConf(userFromPath, pageable);
+        else {
+            switch (RequestStatus.values()[Integer.parseInt(requestStatusOrd)]) {
+                case CONFIRMED ->
+                        requestPage = requestService.findRequestsByStatus(userFromPath, RequestStatus.CONFIRMED, pageable);
+                case IN_PROGRESS ->
+                        requestPage = requestService.findRequestsByStatus(userFromPath, RequestStatus.IN_PROGRESS, pageable);
+                case COMPLETED ->
+                        requestPage = requestService.findRequestsByStatus(userFromPath, RequestStatus.COMPLETED, pageable);
+                case CANCELLED ->
+                        requestPage = requestService.findRequestsByStatus(userFromPath, RequestStatus.CANCELLED, pageable);
+            }
+        }
+
+        paginationUtil.createPageableAndSort(model, "request", requestPage, request, requestSortType);
+
+        List<RequestStatus> requestStatuses = new java.util.ArrayList<>(Arrays.stream(RequestStatus.values()).toList());
+        requestStatuses.remove(RequestStatus.NOT_CONFIRMED);
+        model.addAttribute("requestStatuses", requestStatuses);
+        model.addAttribute("currentRequestStatus", requestStatusOrd.equals("all") ? "all"
+                : RequestStatus.values()[Integer.parseInt(requestStatusOrd)]);
+        model.addAttribute("cars", carService.findByOwner(userFromPath));
         model.addAttribute("user", userFromPath);
         model.addAttribute("authUser", authUser);
-        model.addAttribute("requests", requestService.findAllRequestsWithoutNotConf(userFromPath));
 
         return "personalAccount";
     }
@@ -258,6 +302,7 @@ public class UserController {
             return "redirect:/user/" + authUser.getId() + "-edit";
         }
         model.addAttribute("user", userFromPath);
+        model.addAttribute("authUser", authUser);
 
         return "editUser";
     }
@@ -265,18 +310,22 @@ public class UserController {
     //TODO добавление почты
     @PostMapping("{user}-edit")
     public String editUser(Model model, @AuthenticationPrincipal User authUser,
-                           @ModelAttribute User changeUser) {
+                           @ModelAttribute User changeUser, @RequestParam(required = false) String isAdminCheck) {
 
         model.addAttribute("user", changeUser);
+        model.addAttribute("authUser", authUser);
 
         if (!changeUser.getId().equals(authUser.getId()) && !authUser.isAdmin()) {
             model.addAttribute("message", "У Вас нет прав для редактирования данного пользователя");
             return "editUser";
         }
 
+        if (isAdminCheck != null && !changeUser.isAdmin()) changeUser.addRole(Role.ADMIN);
+        if (isAdminCheck == null && changeUser.isAdmin()) changeUser.deleteRole(Role.ADMIN);
+
         if (!userService.updateUser(changeUser)) {
             model.addAttribute("message", "Введены некорректные данные");
-            model.addAttribute("user", changeUser);
+
             return "editUser";
         }
 
@@ -325,13 +374,15 @@ public class UserController {
             return "redirect:/user/" + authUser.getId();
         }
 
-        imageUtil.deleteFile(userFromPath.getImage());
-        imageUtil.setUserDefaultImage(userFromPath);
-        userService.updateUser(userFromPath);
+        if (!userFromPath.getImage().equals(defaultUserImagePath)) {
+            imageUtil.deleteFile(userFromPath.getImage());
+            imageUtil.setUserDefaultImage(userFromPath);
+            userService.updateUser(userFromPath);
 
-        if (userFromPath.getId().equals(authUser.getId())) {
-            Authentication authentication = new UsernamePasswordAuthenticationToken(authUser, authUser.getPassword(), authUser.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (userFromPath.getId().equals(authUser.getId())) {
+                Authentication authentication = new UsernamePasswordAuthenticationToken(authUser, authUser.getPassword(), authUser.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         return "redirect:/user/{userFromPath}";

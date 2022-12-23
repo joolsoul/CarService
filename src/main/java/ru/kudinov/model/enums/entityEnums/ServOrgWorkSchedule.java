@@ -1,4 +1,4 @@
-package ru.kudinov.model.enums;
+package ru.kudinov.model.enums.entityEnums;
 
 public enum ServOrgWorkSchedule {
     MND_FRD("ПН-ПТ", "09:00-20:00"),

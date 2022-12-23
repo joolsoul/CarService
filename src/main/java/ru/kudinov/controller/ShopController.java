@@ -8,7 +8,7 @@ import ru.kudinov.model.Detail;
 import ru.kudinov.model.DetailRequest;
 import ru.kudinov.model.Request;
 import ru.kudinov.model.User;
-import ru.kudinov.model.enums.DetailType;
+import ru.kudinov.model.enums.entityEnums.DetailType;
 import ru.kudinov.service.DetailRequestService;
 import ru.kudinov.service.DetailService;
 import ru.kudinov.service.RequestService;
@@ -100,5 +100,10 @@ public class ShopController {
         return "redirect:/shop";
     }
 
+    @GetMapping("{detail}")
+    public String getDetailPage(Model model, @PathVariable Detail detail) {
+        model.addAttribute("detail", detail);
+        return "getDetail";
+    }
 
 }

@@ -1,6 +1,6 @@
 package ru.kudinov.model;
 
-import ru.kudinov.model.enums.ServOrgWorkSchedule;
+import ru.kudinov.model.enums.entityEnums.ServOrgWorkSchedule;
 
 import javax.persistence.*;
 
