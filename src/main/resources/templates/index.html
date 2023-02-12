@@ -1,0 +1,699 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/style.css">
+
+    <link rel="stylesheet" type="text/css" href="../static/scripts/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/scripts/slick/slick-theme.css"/>
+</head>
+<body>
+
+<header class="header sticky-top">
+    <div class="container">
+        <div class="header_wrapper">
+            <div class="wrapper_nav">
+                <a class="logo" href="/">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor"
+                         class="logo-svg" viewBox="0 0 16 16">
+                        <path d="M4 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2H6ZM4.862 4.276 3.906 6.19a.51.51 0 0 0 .497.731c.91-.073 2.35-.17 3.597-.17 1.247 0 2.688.097 3.597.17a.51.51 0 0 0 .497-.731l-.956-1.913A.5.5 0 0 0 10.691 4H5.309a.5.5 0 0 0-.447.276Z"/>
+                        <path d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679c.033.161.049.325.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.807.807 0 0 0 .381-.404l.792-1.848ZM4.82 3a1.5 1.5 0 0 0-1.379.91l-.792 1.847a1.8 1.8 0 0 1-.853.904.807.807 0 0 0-.43.564L1.03 8.904a1.5 1.5 0 0 0-.03.294v.413c0 .796.62 1.448 1.408 1.484 1.555.07 3.786.155 5.592.155 1.806 0 4.037-.084 5.592-.155A1.479 1.479 0 0 0 15 9.611v-.413c0-.099-.01-.197-.03-.294l-.335-1.68a.807.807 0 0 0-.43-.563 1.807 1.807 0 0 1-.853-.904l-.792-1.848A1.5 1.5 0 0 0 11.18 3H4.82Z"/>
+                    </svg>
+                </a>
+
+                <nav class="navigation">
+                    <ul class="menu_list nav-pills">
+                        <li class="menu_list-item">
+                            <a class="nav-link menu_link" href="#promotions">Акции</a>
+                        </li>
+                        <li class="menu_list-item">
+                            <a class="nav-link menu_link" href="#employees">Работники</a>
+                        </li>
+                        <li class="menu_list-item">
+                            <a class="menu_link nav-link" href="#shop">Магазин</a>
+                        </li>
+                        <li class="menu_list-item">
+                            <a class="menu_link nav-link" href="#service">Услуги</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="user_activity">
+                <div class="user_buttons" th:unless="${user}" >
+                    <button class="user_button login_button" type="button" >
+                        <a class="user_link login_link" th:href="@{/login}">Вход</a>
+                    </button>
+                    <button class="user_button registration_button" type="button">
+                        <a class="user_link registration_link" th:href="@{/registration}">Регистрация</a>
+                    </button>
+                </div>
+
+                <div class="user_buttons" th:if="${user}" >
+                    <form class="user_logout-form" th:action="@{/logout}" method="post">
+                        <button class="user_button logout_button" type="submit" >
+                            Выход
+                        </button>
+                    </form>
+                    <div class="user_account">
+                        <a class="user_account-link" th:href="@{/user/__${user.id}__}">
+                            <img class="user-image" th:src="@{/img/__${user?.image}__}" alt="">
+                        </a>
+                    </div>
+                    <a class="user_cart-link" th:href="@{/cart}">
+                        <svg class="cart-image" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                              viewBox="0 0 16 16">
+                            <path d="M4 10a1 1 0 0 1 2 0v2a1 1 0 0 1-2 0v-2zm3 0a1 1 0 0 1 2 0v2a1 1 0 0 1-2 0v-2zm3 0a1 1 0 1 1 2 0v2a1 1 0 0 1-2 0v-2z"/>
+                            <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-.623l-1.844 6.456a.75.75 0 0 1-.722.544H3.69a.75.75 0 0 1-.722-.544L1.123 8H.5a.5.5 0 0 1-.5-.5v-1A.5.5 0 0 1 .5 6h1.717L5.07 1.243a.5.5 0 0 1 .686-.172zM2.163 8l1.714 6h8.246l1.714-6H2.163z"/>
+                        </svg>
+                        <span class="cartProductCounter" th:text="${cartProductCounter}"></span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</header>
+
+<main class="main">
+    <div data-bs-spy="scroll" data-bs-target="#navbar-example2" data-bs-root-margin="0px 0px -40%"
+          data-bs-smooth-scroll="true" tabindex="0">
+
+        <div class="page__why why">
+            <div class="container">
+                <h2 class="why__title title">Наши преимущества</h2>
+                <div class="why__items-1">
+                    <div class="why__item item-why">
+                        <div class="item-why__icon">
+                            <img class="why__img" src="../static/img/advantages/adv_1.svg" alt="Icon">
+                        </div>
+                        <div class="item-why__title">Гарантия качества</div>
+                        <div class="item-why__text">Мы даем 1 год гарантии на все услуги, оказанные нашим сервисом.</div>
+                    </div>
+                    <div class="why__item item-why">
+                        <div class="item-why__icon">
+                            <img class="why__img" src="../static/img/advantages/ad_2.svg" alt="Icon">
+                        </div>
+                        <div class="item-why__title">Профессионализм</div>
+                        <div class="item-why__text">Все сотрудники сервиса прошли обучение и имеют соответствующие сертификаты</div>
+                    </div>
+                    <div class="why__item item-why">
+                        <div class="item-why__icon">
+                            <img class="why__img" src="../static/img/advantages/adv_3.svg" alt="Icon">
+                        </div>
+                        <div class="item-why__title">Точно в срок</div>
+                        <div class="item-why__text">Мы экономим Ваше и свое время. Поэтому устанавливаем точные сроки выполнения работ.</div>
+                    </div>
+                </div>
+                <div class="why__items-2">
+                    <div class="why__item item-why">
+                        <div class="item-why__icon">
+                            <img class="why__img" src="../static/img/advantages/adv_4.svg" alt="Icon">
+                        </div>
+                        <div class="item-why__title">Отсутствие очередей</div>
+                        <div class="item-why__text">На все купленные запчасти распространяется гарантия</div>
+                    </div>
+                    <div class="why__item item-why">
+                        <div class="item-why__icon">
+                            <img class="why__img" src="../static/img/advantages/adv_5.svg" alt="Icon">
+                        </div>
+                        <div class="item-why__title">Большой ассортимент</div>
+                        <div class="item-why__text">Реализуем детали для самых ходовых машин </div>
+                    </div>
+                    <div class="why__item item-why">
+                        <div class="item-why__icon">
+                            <img class="why__img" src="../static/img/advantages/adv_6.svg" alt="Icon">
+                        </div>
+                        <div class="item-why__title">Наличие запчастей</div>
+                        <div class="item-why__text">Большое колличесвто запчастей всегда в наличии.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="popular">
+            <h2 class="why__title title" id="promotions">Акции</h2>
+            <div class="container">
+                <div class="popular__items">
+
+                    <a href="#" class="popular__link" style="background-image: url(../static/img/promotions/promo.png);">
+                    </a>
+
+                    <a href="#" class="popular__link" style="background-image: url(../static/img/promotions/promo.png);">
+                    </a>
+
+                    <a href="#" class="popular__link" style="background-image: url(../static/img/promotions/promo.png);">
+                    </a>
+
+                    <a href="#" class="popular__link" style="background-image: url(../static/img/promotions/promo.png);">
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="employees" id="employees">
+            <h2 class="why__title title empl-title" >Работники</h2>
+            <div class="container">
+                <div class="slider single-item">
+                    <div class="employee_card">
+
+                        <div class="employee_photo">
+                            <img class="empl_img" src="../static/img/employees/empl.jpg" alt="">
+                        </div>
+
+                        <span class="employeeName">
+                            Рощупкин Ярослав Александрович
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Должность:</span>
+                        <span class="employeeData employeePost">
+                            Работник
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Стаж:</span>
+                        <span class="employeeData employeeExperience">
+                            3 года
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">График работы:</span>
+                        <span class="employeeData employeeWorkSch">
+                            4/2
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Возраст:</span>
+                        <span class="employeeData employeeAge">
+                            27
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Телефон:</span>
+                        <span class="employeeData employeePhone">
+                            8(800) 555 35 35
+                        </span>
+
+                    </div>
+
+                    <div class="employee_card">
+
+                        <div class="employee_photo">
+                            <img class="empl_img" src="../static/img/employees/empl.jpg" alt="">
+                        </div>
+
+                        <span class="employeeName">
+                            Рощупкин Ярослав Александрович
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Должность:</span>
+                        <span class="employeeData employeePost">
+                            Работник
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Стаж:</span>
+                        <span class="employeeData employeeExperience">
+                            3 года
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">График работы:</span>
+                        <span class="employeeData employeeWorkSch">
+                            4/2
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Возраст:</span>
+                        <span class="employeeData employeeAge">
+                            27
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Телефон:</span>
+                        <span class="employeeData employeePhone">
+                            8(800) 555 35 35
+                        </span>
+
+                    </div>
+
+                    <div class="employee_card">
+
+                        <div class="employee_photo">
+                            <img class="empl_img" src="../static/img/employees/empl.jpg" alt="">
+                        </div>
+
+                        <span class="employeeName">
+                            Рощупкин Ярослав Александрович
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Должность:</span>
+                        <span class="employeeData employeePost">
+                            Работник
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Стаж:</span>
+                        <span class="employeeData employeeExperience">
+                            3 года
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">График работы:</span>
+                        <span class="employeeData employeeWorkSch">
+                            4/2
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Возраст:</span>
+                        <span class="employeeData employeeAge">
+                            27
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Телефон:</span>
+                        <span class="employeeData employeePhone">
+                            8(800) 555 35 35
+                        </span>
+
+                    </div>
+
+                    <div class="employee_card">
+
+                        <div class="employee_photo">
+                            <img class="empl_img" src="../static/img/employees/empl.jpg" alt="">
+                        </div>
+
+                        <span class="employeeName">
+                            Рощупкин Ярослав Александрович
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Должность:</span>
+                        <span class="employeeData employeePost">
+                            Работник
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Стаж:</span>
+                        <span class="employeeData employeeExperience">
+                            3 года
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">График работы:</span>
+                        <span class="employeeData employeeWorkSch">
+                            4/2
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Возраст:</span>
+                        <span class="employeeData employeeAge">
+                            27
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Телефон:</span>
+                        <span class="employeeData employeePhone">
+                            8(800) 555 35 35
+                        </span>
+
+                    </div>
+
+                    <div class="employee_card">
+
+                        <div class="employee_photo">
+                            <img class="empl_img" src="../static/img/employees/empl.jpg" alt="">
+                        </div>
+
+                        <span class="employeeName">
+                            Рощупкин Ярослав Александрович
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Должность:</span>
+                        <span class="employeeData employeePost">
+                            Работник
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Стаж:</span>
+                        <span class="employeeData employeeExperience">
+                            3 года
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">График работы:</span>
+                        <span class="employeeData employeeWorkSch">
+                            4/2
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Возраст:</span>
+                        <span class="employeeData employeeAge">
+                            27
+                        </span>
+                        <br>
+
+                        <span class="employeeLabel">Телефон:</span>
+                        <span class="employeeData employeePhone">
+                            8(800) 555 35 35
+                        </span>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="shop">
+            <div class="container">
+                <h2 class="why__title title" id="shop">Магазин</h2>
+
+                <div class="shop-preview">
+
+                    <div class="shop-item">
+
+                        <div>
+                            <img class="item-photo" alt="" src="../static/img/shop/default-item.jpeg">
+                        </div>
+                        <div class="item-cost">
+                            <span class="cost">265</span>
+                            <span class="cost">₽</span>
+                        </div>
+                        <div class="item-name">
+                            Свеча зажигания
+                        </div>
+                        <div class="item-id">
+                            Denso·K16RU11
+                        </div>
+                        <div class="item-quantity">
+                            <span>Количество:</span>
+                            <span>25</span>
+                            <span>шт.</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="addCart-button">
+                                В корзину
+                            </button>
+
+                            <div class="counter">
+                                <button class="minus" type="button" id="m_1">-</button>
+                                <input class="quantityInput" type="text" name="detailQuantity" value="1"
+                                       th:max="10" readonly
+                                       id="input_1">
+                                <button class="plus" type="button" id="p_1">+</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="shop-item">
+
+                        <div>
+                            <img class="item-photo" alt="" src="../static/img/shop/default-item.jpeg">
+                        </div>
+                        <div class="item-cost">
+                            <span class="cost">265</span>
+                            <span class="cost">₽</span>
+                        </div>
+                        <div class="item-name">
+                            Свеча зажигания
+                        </div>
+                        <div class="item-id">
+                            Denso·K16RU11
+                        </div>
+                        <div class="item-quantity">
+                            <span>Количество:</span>
+                            <span>25</span>
+                            <span>шт.</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="addCart-button">
+                                В корзину
+                            </button>
+
+                            <div class="counter">
+                                <button class="minus" type="button" id="m_2">-</button>
+                                <input class="quantityInput" type="text" name="detailQuantity" value="1"
+                                       th:max="10" readonly
+                                       id="input_2">
+                                <button class="plus" type="button" id="p_2">+</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="shop-item">
+
+                        <div>
+                            <img class="item-photo" alt="" src="../static/img/shop/default-item.jpeg">
+                        </div>
+                        <div class="item-cost">
+                            <span class="cost">265</span>
+                            <span class="cost">₽</span>
+                        </div>
+                        <div class="item-name">
+                            Свеча зажигания
+                        </div>
+                        <div class="item-id">
+                            Denso·K16RU11
+                        </div>
+                        <div class="item-quantity">
+                            <span>Количество:</span>
+                            <span>25</span>
+                            <span>шт.</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="addCart-button">
+                                В корзину
+                            </button>
+
+                            <div class="counter">
+                                <button class="minus" type="button" id="m_3">-</button>
+                                <input class="quantityInput" type="text" name="detailQuantity" value="1"
+                                       th:max="10" readonly
+                                       id="input_3">
+                                <button class="plus" type="button" id="p_3">+</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="shop-item">
+
+                        <div>
+                            <img class="item-photo" alt="" src="../static/img/shop/default-item.jpeg">
+                        </div>
+                        <div class="item-cost">
+                            <span class="cost">265</span>
+                            <span class="cost">₽</span>
+                        </div>
+                        <div class="item-name">
+                            Свеча зажигания
+                        </div>
+                        <div class="item-id">
+                            Denso·K16RU11
+                        </div>
+                        <div class="item-quantity">
+                            <span>Количество:</span>
+                            <span>25</span>
+                            <span>шт.</span>
+                        </div>
+                        <div class="item-actions">
+                            <button class="addCart-button">
+                                В корзину
+                            </button>
+
+                            <div class="counter">
+                                <button class="minus" type="button" id="m_4">-</button>
+                                <input class="quantityInput" type="text" name="detailQuantity" value="1"
+                                       th:max="10" readonly
+                                       id="input_4">
+                                <button class="plus" type="button" id="p_4">+</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div>
+                        <button class="shop-button">
+                            <a class="shop-link" href="/shop">В магазин
+                                <svg class="shop-link-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                                    <g fill="none" stroke="#0d6efd" stroke-width="1.5" stroke-linejoin="round" stroke-miterlimit="10">
+                                        <circle class="shop-link-iconcircle" cx="16" cy="16" r="15.12"></circle>
+                                        <path class="shop-link-icon--arrow" d="M16.14 9.93L22.21 16l-6.07 6.07M8.23 16h13.98"></path>
+                                    </g>
+                                </svg>
+                            </a>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <h2 class="why__title title" id="service">Услуги</h2>
+        <p>Есть много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые модификации, например,
+            юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для
+            серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие
+            известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют, пока не достигнут
+            нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он
+            использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В результате
+            сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.Есть
+            много вариантов Lorem IpsumЕсть много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые. Есть много вариантов Lorem
+            Ipsum, но большинство из них имеет не всегда приемлемые модификации, например, юмористические вставки или слова,
+            которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не
+            хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие известные генераторы Lorem Ipsum
+            используют один и тот же текст, который они просто повторяют, пока не достигнут нужный объём. Это делает
+            предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он использует словарь из более чем
+            200 латинских слов, а также набор моделей предложений. В результате сгенерированный Lorem Ipsum выглядит
+            правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.Есть много вариантов Lorem Ipsum, но
+            большинство из них имеет не всегда приемлемые модификации, например, юмористические вставки или слова, которые
+            даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите
+            какой-нибудь шутки, скрытой в середине абзаца. Также все другие известные генераторы Lorem Ipsum используют один
+            и тот же текст, который они просто повторяют, пока не достигнут нужный объём. Это делает предлагаемый здесь
+            генератор единственным настоящим Lorem Ipsum генератором. Он использует словарь из более чем 200 латинских слов,
+            а также набор моделей предложений. В результате сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет
+            повторяющихся абзацей или "невозможных" слов.Есть много вариантов Lorem Ipsum, но большинство из них имеет не
+            всегда приемлемые модификации, например, юмористические вставки или слова, которые даже отдалённо не напоминают
+            латынь. Если вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в
+            середине абзаца. Также все другие известные генераторы Lorem Ipsum используют один и тот же текст, который они
+            просто повторяют, пока не достигнут нужный объём. Это делает предлагаемый здесь генератор единственным настоящим
+            Lorem Ipsum генератором. Он использует словарь из более чем 200 латинских слов, а также набор моделей
+            предложений. В результате сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или
+            "невозможных" слов.Есть много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые
+            модификации, например, юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам
+            нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца.
+            Также все другие известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют,
+            пока не достигнут нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum
+            генератором. Он использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В
+            результате сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных"
+            слов.модификации, например, юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если
+            вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине
+            абзаца. Также все другие известные генераторы Lorem Ipsum используют один и тот же текст, который они просто
+            повторяют, пока не достигнут нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem
+            Ipsum генератором. Он использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В
+            результате сгенерированный Lorem Ipsum выглядит правдоподоЕсть много вариантов Lorem Ipsum, но большинство из
+            них имеет не всегда приемлемые модификации, например, юмористические вставки или слова, которые даже отдалённо
+            не напоминают латынь. Если вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите какой-нибудь
+            шутки, скрытой в середине абзаца. Также все другие известные генераторы Lorem Ipsum используют один и тот же
+            текст, который они просто повторяют, пока не достигнут нужный объём. Это делает предлагаемый здесь генератор
+            единственным настоящим Lorem Ipsum генератором. Он использует словарь из более чем 200 латинских слов, а также
+            набор моделей предложений. В результате сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет
+            повторяющихся абзацей или "невозможных" слов.бно, не имеет повторяющихся абзацей или "невозможных" слов.Есть
+            много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые модификации, например,
+            юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для
+            серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие
+            известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют, пока не достигнут
+            нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он
+            использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В результате
+            сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.Есть
+            много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые модификации, например,
+            юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для
+            серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие
+            известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют, пока не достигнут
+            нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он
+            использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В результате
+            сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.Есть много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые. Есть много вариантов Lorem
+            Ipsum, но большинство из них имеет не всегда приемлемые модификации, например, юмористические вставки или слова,
+            которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не
+            хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие известные генераторы Lorem Ipsum
+            используют один и тот же текст, который они просто повторяют, пока не достигнут нужный объём. Это делает
+            предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он использует словарь из более чем
+            200 латинских слов, а также набор моделей предложений. В результате сгенерированный Lorem Ipsum выглядит
+            правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.Есть много вариантов Lorem Ipsum, но
+            большинство из них имеет не всегда приемлемые модификации, например, юмористические вставки или слова, которые
+            даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите
+            какой-нибудь шутки, скрытой в середине абзаца. Также все другие известные генераторы Lorem Ipsum используют один
+            и тот же текст, который они просто повторяют, пока не достигнут нужный объём. Это делает предлагаемый здесь
+            генератор единственным настоящим Lorem Ipsum генератором. Он использует словарь из более чем 200 латинских слов,
+            а также набор моделей предложений. В результате сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет
+            повторяющихся абзацей или "невозможных" слов.Есть много вариантов Lorem Ipsum, но большинство из них имеет не
+            всегда приемлемые модификации, например, юмористические вставки или слова, которые даже отдалённо не напоминают
+            латынь. Если вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в
+            середине абзаца. Также все другие известные генераторы Lorem Ipsum используют один и тот же текст, который они
+            просто повторяют, пока не достигнут нужный объём. Это делает предлагаемый здесь генератор единственным настоящим
+            Lorem Ipsum генератором. Он использует словарь из более чем 200 латинских слов, а также набор моделей
+            предложений. В результате сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или
+            "невозможных" слов.Есть много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые
+            модификации, например, юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам
+            нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца.
+            Также все другие известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют,
+            пока не достигнут нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum
+            генератором. Он использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В
+            результате сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных"
+            слов.модификации, например, юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если
+            вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине
+            абзаца. Также все другие известные генераторы Lorem Ipsum используют один и тот же текст, который они просто
+            повторяют, пока не достигнут нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem
+            Ipsum генератором. Он использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В
+            результате сгенерированный Lorem Ipsum выглядит правдоподоЕсть много вариантов Lorem Ipsum, но большинство из
+            них имеет не всегда приемлемые модификации, например, юмористические вставки или слова, которые даже отдалённо
+            не напоминают латынь. Если вам нужен Lorem Ipsum для серьёзного проекта, вы наверняка не хотите какой-нибудь
+            шутки, скрытой в середине абзаца. Также все другие известные генераторы Lorem Ipsum используют один и тот же
+            текст, который они просто повторяют, пока не достигнут нужный объём. Это делает предлагаемый здесь генератор
+            единственным настоящим Lorem Ipsum генератором. Он использует словарь из более чем 200 латинских слов, а также
+            набор моделей предложений. В результате сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет
+            повторяющихся абзацей или "невозможных" слов.бно, не имеет повторяющихся абзацей или "невозможных" слов.Есть
+            много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые модификации, например,
+            юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для
+            серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие
+            известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют, пока не достигнут
+            нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он
+            использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В результате
+            сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.Есть
+            много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые модификации, например,
+            юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для
+            серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие
+            известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют, пока не достигнут
+            нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он
+            использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В результате
+            сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов., но большинство из них имеет не всегда приемлемые модификации, например,
+            юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для
+            серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие
+            известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют, пока не достигнут
+            нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он
+            использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В результате
+            сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.Есть
+            много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые модификации, например,
+            юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для
+            серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие
+            известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют, пока не достигнут
+            нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он
+            использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В результате
+            сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.Есть
+            много вариантов Lorem Ipsum, но большинство из них имеет не всегда приемлемые модификации, например,
+            юмористические вставки или слова, которые даже отдалённо не напоминают латынь. Если вам нужен Lorem Ipsum для
+            серьёзного проекта, вы наверняка не хотите какой-нибудь шутки, скрытой в середине абзаца. Также все другие
+            известные генераторы Lorem Ipsum используют один и тот же текст, который они просто повторяют, пока не достигнут
+            нужный объём. Это делает предлагаемый здесь генератор единственным настоящим Lorem Ipsum генератором. Он
+            использует словарь из более чем 200 латинских слов, а также набор моделей предложений. В результате
+            сгенерированный Lorem Ipsum выглядит правдоподобно, не имеет повторяющихся абзацей или "невозможных" слов.</p>
+    </div>
+</main>
+<script src="/js/productCounter.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/scripts/slick/slick.min.js"></script>
+
+<script src="/js/main.js"></script>
+
+</body>
+</html>

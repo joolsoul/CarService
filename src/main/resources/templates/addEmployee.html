@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<a href="/">Главная</a>
+<a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+
+<div th:text="${message}">
+    {
+</div>
+
+<form th:action="@{/admin/addEmployee}" method="post" enctype="multipart/form-data">
+
+    <div class="form-group">
+        <input class="input" id="uploadImages" type="file" name="uploadImage"
+               placeholder="Загрузите изображения">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="text" name="name"
+               placeholder="Имя"
+               th:value="${employee?.name}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="text" name="patronymic"
+               placeholder="Отчество"
+               th:value="${employee?.patronymic}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="text" name="surname"
+               placeholder="Фамилия"
+               th:value="${employee?.surname}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="text" name="phoneNumber"
+               placeholder="Контактный телефон"
+               th:value="${employee?.phoneNumber}">
+    </div>
+
+
+    <div class="form-group">
+        <input class="input" type="text" name="address"
+               placeholder="Адрес"
+               th:value="${employee?.address}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="date" pattern="yyyy-MM-dd" name="birthdate"
+               placeholder="Дата рождения"
+               th:value="${employee?.birthdate}">
+    </div>
+
+    <select th:if="${not #lists.isEmpty(posts)}" name="selectPost">
+        <option th:each="post : ${posts}"
+                th:value="${post?.ordinal()}"
+                th:text="${post?.value}"
+                th:selected="${post == employee?.post}">
+        </option>
+    </select>
+
+    <div class="form-group">
+        <input class="input" type="number" name="workExperience"
+               placeholder="Стаж работы"
+               th:value="${employee?.workExperience}">
+    </div>
+
+    <select th:if="${not #lists.isEmpty(workSchedules)}" name="selectWorkSchedule">
+        <option th:each="employeeWorkSchedule : ${workSchedules}"
+                th:value="${employeeWorkSchedule?.ordinal()}"
+                th:text="${employeeWorkSchedule?.value}"
+                th:selected="${employeeWorkSchedule == employee?.employeeWorkSchedule}">
+        </option>
+    </select>
+
+    <div class="form-group">
+        <input class="input" type="number" name="salary"
+               placeholder="Оклад"
+               th:value="${employee?.salary}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="number" name="seniorityAllowance"
+               placeholder="Надбавка за стаж"
+               th:value="${employee?.seniorityAllowance}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="number" name="wages"
+               placeholder="Зарплата"
+               th:value="${employee?.wages}">
+    </div>
+
+    <button class="btn" type="submit">Добавить</button>
+
+    <!--CSRF Token-->
+    <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}"/>
+</form>
+
+</body>
+</html>

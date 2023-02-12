@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Сервисы</title>
+</head>
+<body>
+<a href="/">Главная</a>
+<a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+
+<div th:text="${message}">
+    {
+</div>
+
+<th:block th:each="serviceOrganization : ${serviceOrganizations}">
+
+    <p th:text="${serviceOrganization?.id} + ' Адрес: ' + ${serviceOrganization?.address}">.</p>
+    <p th:text="'Номер: ' + ${serviceOrganization?.phoneNumber}">.</p>
+    <p th:text="'График работы: ' + ${serviceOrganization?.servOrgWorkSchedule.getWeekday()} + ' ' +
+                                        ${serviceOrganization?.servOrgWorkSchedule.getTime()}">.</p>
+
+    <li><a th:href="@{/admin/editServiceOrganization/__${serviceOrganization?.id}__}">Редактировать</a></li>
+    <li><a href="/admin/deleteServiceOrganization/" th:attrappend="href=${serviceOrganization?.id}">Удалить
+        автосервис</a></li>
+    <p>--------------------------------</p>
+
+</th:block>
+
+
+</body>
+</html>

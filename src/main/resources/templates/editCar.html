@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<h1 class="auth-title">Редактирование</h1>
+
+<div th:text="${message}">
+    {
+</div>
+
+<form action="" method="post">
+    <div class="form-group">
+        <input class="input" type="text" name="registrationNumber"
+               placeholder="Редактировать регистрационный номер" th:value="${car.registrationNumber}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="text" name="carBrand"
+               placeholder="Редактировать марку" th:value="${car.carBrand}">
+  </div>
+
+  <button class="btn" type="submit">Редактировать</button>
+  <a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+
+  <!--CSRF Token-->
+  <input
+          type="hidden"
+          th:name="${_csrf.parameterName}"
+          th:value="${_csrf.token}" />
+</form>
+
+</body>
+</html>

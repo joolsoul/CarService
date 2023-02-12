@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div><a href="/">Главная</a></div>
+<div><a href="/shop">Назад</a></div>
+
+
+<div th:each="path : ${detail?.images}">
+    <img th:src="@{/img/__${path}__}" alt="Нажмите для выбора файла." width="50px" height="50px">
+</div>
+<div th:utext="${detail?.name}">..</div>
+<div th:utext="'Количество: ' + ${detail?.quantity}">..</div>
+<div th:utext="${detail?.price}">..</div>
+<div th:utext="${detail?.description}">..</div>
+<div th:utext="${detail.detailType.getValue()}">..</div>
+<div th:utext="${detail?.id}">..</div>
+
+<form th:action="@{/shop/__${detail?.id}__}" method="post">
+    <div class="count">
+                <span class="change">
+                    <button class="minus" type="button" id="m_" th:attrappend="id=${detail?.id}">-</button>
+                </span>
+        <input class="quantityInput" type="number" name="detailQuantity" value="1"
+               th:max="${detail?.quantity}" readonly
+               id="input_" th:attrappend="id=${detail?.id}">
+        <span class="change">
+                    <button class="plus" type="button" id="p_" th:attrappend="id=${detail?.id}">+</button>
+                </span>
+    </div>
+
+    <button type="submit">В корзину</button>
+</form>
+
+<script src="../static/js/productCounter.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<a href="/">Главная</a>
+<a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+<a href="/admin/getDetails">Назад</a>
+
+<div th:text="${message}">
+    {
+</div>
+
+<form th:action="@{/admin/editDetail/__${detail?.id}__}" method="post" enctype="multipart/form-data">
+
+    <div class="form-group">
+        <input class="input" type="text" name="name"
+               placeholder="Название детали"
+               th:value="${detail.name}">
+
+        <input type="text" hidden th:value="${detail.name}" name="oldDetailName">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="number" name="quantity"
+               placeholder="Количество деталей"
+               th:value="${detail.quantity}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="number" name="price"
+               placeholder="Цена детали"
+               th:value="${detail.price}">
+    </div>
+
+    <div class="form-group">
+        <input class="input" type="text" name="description"
+               placeholder="Описание детали"
+               th:value="${detail.description}">
+    </div>
+
+    <select th:if="${not #lists.isEmpty(detailTypes)}" name="selectDetailType">
+        <option th:each="detailType : ${detailTypes}"
+                th:value="${detailType?.ordinal()}"
+                th:text="${detailType?.value}"
+                th:selected="${detailType == detail?.detailType}">
+        </option>
+    </select>
+
+    <div th:each="path, state : ${detail?.images}">
+        <img th:src="@{/img/__${path}__}" alt="Нажмите для выбора файла." width="50px" height="50px"
+             th:id="'img_' + __${state.index}__">
+        <p hidden th:text="${path}" th:id="'path_' + __${state.index}__"></p>
+        <button class="deleteButton" type="button" th:id="'btn_' + __${state.index}__">Удалить</button>
+    </div>
+
+    <input type="text" id="imagesToDelete" hidden name="imagesToDelete">
+
+    <div class="form-group">
+        <input class="input" id="uploadImages" type="file" name="uploadImages" multiple>
+    </div>
+
+    <button class="btn" type="submit">Редактировать деталь</button>
+
+    <!--CSRF Token-->
+    <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}"/>
+</form>
+
+<script src="/js/imageUploadController.js"></script>
+</body>
+</html>

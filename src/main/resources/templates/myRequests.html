@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1 class="auth-title">Заказы</h1>
+
+<div th:text="${message}">
+    {
+</div>
+
+<div><a th:if="${user}" href="/user/" th:attrappend="href=${user?.id}">Личный кабинет</a></div>
+
+<div>
+    <span th:text="${car?.carBrand}"></span>
+    <span th:text="${car?.registrationNumber}"></span>
+</div>
+
+<ul>
+
+    <th:block th:each="request : ${requests}">
+
+        <a th:href="@{/getRequest/__${request?.id}__}">
+            <li th:utext="'Заказ №' + ${request?.id}">..</li>
+            <li th:utext="${#dates.format(request?.orderDate, 'dd-MM-yyyy HH:mm')}">..</li>
+            <li th:utext="${request?.cost}">..</li>
+            <li th:utext="${request?.requestStatus?.value.toUpperCase()}">..</li>
+        </a>
+
+        <a th:if="${authUser?.isAdmin()} and ${!request.isRequestCancelled()}"
+           th:href="@{/admin/applyRequest/__${request?.id}__}">Принять заказ</a>
+        <a th:if="${authUser?.isAdmin()} and ${!request.isRequestCancelled()}"
+           th:href="@{/cancelRequest/__${request?.id}__}">Отменить заказ</a>
+        <a th:if="${authUser.isAdmin()}" th:href="@{/admin/deleteRequest/__${request.id}__}">Удалить заказ</a>
+        <p>-------------------</p>
+
+    </th:block>
+
+</ul>
+</body>
+</html>

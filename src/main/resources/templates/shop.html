@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<div>Магазин</div>
+<div><a href="/">Главная</a></div>
+
+<ul>
+    <th:block th:each="detailType : ${detailTypes}">
+
+        <a href="/shop?filterDetailType=" th:attrappend="href=${detailType}"
+           th:text="${detailType.value}">NULL</a>
+    </th:block>
+</ul>
+<a href="/shop">Сбросить фильтры</a>
+<ul>
+    <th:block th:each="detailsElement : ${details}">
+
+        <ul>
+            <th:block th:each="detail : ${detailsElement.value}">
+
+                <a th:href="@{/shop/__${detail.id}__}">
+                    <img th:src="@{/img/__${detail?.images[0]}__}" alt="Нажмите для выбора файла." width="50px"
+                         height="50px">
+                    <li th:utext="${detail?.name}">..</li>
+                    <li th:utext="'Количество: ' + ${detail?.quantity}">..</li>
+                    <li th:utext="${detail?.price}">..</li>
+                    <li th:utext="${detail.detailType.getValue()}">..</li>
+                    <li th:utext="${detail?.id}">..</li>
+                </a>
+
+                <form th:action="@{/shop/__${detail?.id}__}" method="post">
+                    <div class="count">
+                        <span class="change">
+                            <button class="minus" type="button" id="m_" th:attrappend="id=${detail?.id}">-</button>
+                        </span>
+                        <input class="quantityInput" type="number" name="detailQuantity" value="1"
+                               th:max="${detail?.quantity}" readonly
+                               id="input_" th:attrappend="id=${detail?.id}">
+                        <span class="change">
+                            <button class="plus" type="button" id="p_" th:attrappend="id=${detail?.id}">+</button>
+                        </span>
+                    </div>
+
+                    <button type="submit">В корзину</button>
+                </form>
+
+            </th:block>
+        </ul>
+
+    </th:block>
+</ul>
+
+<script src="/js/productCounter.js"></script>
+</body>
+</html>

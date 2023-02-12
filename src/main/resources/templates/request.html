@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div><a th:if="${user}" href="/user/" th:attrappend="href=${user?.id}">Личный кабинет</a></div>
+
+<div th:text="${message}">
+    {
+</div>
+<div th:if="${request}">
+    <h1 class="auth-title" th:text="'Заказ №' + ${request?.id}"></h1>
+
+    <div>
+
+        <p th:text="'Дата заказа: ' + ${request?.orderDate}"></p>
+
+        <div>
+            Автомобиль:
+            <p th:text="'Регистрационный номер: ' + ${request?.car?.registrationNumber}"></p>
+            <p th:text="'Марка: ' + ${request?.car?.carBrand}"></p>
+        </div>
+
+        <p th:text="'Адрес сервиса: ' + ${request?.serviceOrganization?.address}"></p>
+
+        <ul>
+
+            <th:block th:each="detailRequest : ${detailRequests}">
+                <a th:href="@{/shop/__${detailRequest?.detail.id}__}">
+                    <li th:utext="'Название детали: ' + ${detailRequest?.detail?.name}">..</li>
+                    <li th:utext="'Количество: ' + ${detailRequest?.quantity}">..</li>
+                    <li th:utext="'Стоимость: ' + ${detailRequest?.price}">..</li>
+                </a>
+                <p>-------------------</p>
+
+            </th:block>
+
+        </ul>
+
+        <ul>
+
+            <th:block th:each="serviceRequest : ${serviceRequests}">
+
+                <li th:utext="'Услуга: ' + ${serviceRequest?.service?.name}">..</li>
+                <div>
+                    Работник:
+                    <p th:text="'ФИО: ' + ${serviceRequest?.employee?.name} + ' ' +
+                                    ${serviceRequest?.employee?.patronymic} + ' ' +
+                                    ${serviceRequest?.employee?.surname} + ' '"></p>
+                </div>
+                <li th:utext="'Стоимость: ' + ${serviceRequest?.price}">..</li>
+
+                <p>-------------------</p>
+
+            </th:block>
+
+        </ul>
+
+
+        <p th:text="'Статус: ' + ${request?.requestStatus?.value}"></p>
+        <p th:text="'Итоговая стоимость: ' + ${request?.cost}"></p>
+    </div>
+    <a th:if="${authUser?.isAdmin()} and ${!request.isRequestCancelled()}"
+       th:href="@{/admin/applyRequest/__${request?.id}__}">Принять заказ</a>
+    <a th:if="${authUser?.isAdmin()} and ${!request.isRequestCancelled()}"
+       th:href="@{/cancelRequest/__${request?.id}__}">Отменить заказ</a>
+    <a th:if="${authUser.isAdmin()}" th:href="@{/admin/deleteRequest/__${request.id}__}">Удалить заказ</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+
+<div>Услуги</div>
+<div><a href="/">Главная</a></div>
+<ul>
+    <th:block th:each="serviceElement : ${services}">
+        <h3 th:utext="${serviceElement?.key}">.</h3>
+
+        <ul>
+            <th:block th:each="service : ${serviceElement.value}">
+                <li th:utext="${service?.name}">..</li>
+                <li th:utext="${service?.price}">..</li>
+                <a href="/service/" th:attrappend="href=${service?.id}">Записаться</a>
+            </th:block>
+        </ul>
+
+    </th:block>
+</ul>
+</div>
+</body>
+</html>

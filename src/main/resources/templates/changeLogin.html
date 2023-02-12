@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<h1 class="auth-title">Смена логина</h1>
+
+<div th:text="${message}">
+  {
+</div>
+
+<form action="" method="post">
+  <div class="form-group">
+    <input th:value="${newLogin}" class="input" type="text" name="newLogin"
+           placeholder="Введите новый логин">
+  </div>
+
+  <button class="btn" type="submit">Изменить</button>
+
+  <a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+
+  <!--CSRF Token-->
+  <input
+          type="hidden"
+          th:name="${_csrf.parameterName}"
+          th:value="${_csrf.token}" />
+</form>
+</body>
+</html>

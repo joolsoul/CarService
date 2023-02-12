@@ -1,0 +1,281 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/main.css">
+</head>
+<body>
+<div class="container">
+    <a href="/">Главная</a>
+
+    <div>
+        <div>
+            <form th:action="@{__${user?.id}__ + '-changeImage'}" method="post" enctype="multipart/form-data">
+                <div>
+                    <label>
+                        <img th:src="@{/img/__${user?.image}__}" alt="Нажмите для выбора файла." width="50px"
+                             height="50px"
+                             title="Загрузите фото">
+                        <input class="input" id="uploadImage" type="file" name="uploadImage" hidden>
+                    </label>
+
+                    <!--CSRF Token-->
+                    <input
+                            type="hidden"
+                            th:name="${_csrf.parameterName}"
+                            th:value="${_csrf.token}"/>
+                </div>
+                <button type="submit" id="loadImageSubmitButton" hidden></button>
+            </form>
+            <a th:href="@{/user/__${user?.id}__-deleteImage}">Удалить фото</a>
+        </div>
+
+        <div>
+            <p th:text="__${user?.surname}__ + ' ' + __${user?.name}__ + ' ' + __${user?.patronymic}__"></p>
+
+            <div>
+                <span>Номер: </span>
+                <span th:text="${user?.phoneNumber}"> </span>
+            </div>
+
+            <div>
+                <span>Логин: </span>
+                <span th:text="${user?.username}"> </span>
+                <div>
+                    <a href="/user/" th:attrappend="href=${user.id + '-changeLogin'}">Изменить логин</a>
+                </div>
+            </div>
+
+            <div>
+                <span th:if="${user?.email}" th:text="'Почта: ' + ${user?.email}"></span>
+                <div>
+                    <a th:href="@{/user/__${user.id}__-changeEmail}">Редактировать почту</a>
+                </div>
+            </div>
+
+            <div>
+                <a href="/user/" th:attrappend="href=${user.id + '-edit'}">Редактировать профиль</a>
+            </div>
+
+            <div>
+                <a th:unless="${adminOnUserPage}" href="/user/" th:attrappend="href=${user.id + '-changePassword'}">Изменить
+                    пароль</a>
+                <a th:if="${adminOnUserPage}" th:href="@{/passwordReset/__${user.id}__}">Сбросить пароль</a>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div>Список автомобилей</div>
+
+    <div>
+        <form method="post" th:action="@{/user/__${user.id}__/addCar}">
+            <div th:text="${message}">
+                {
+            </div>
+            <input th:value="${carToAdd?.registrationNumber}" type="text" name="registrationNumber"
+                   placeholder="Введите регистрационый номер автомобиля">
+            <input th:value="${carToAdd?.carBrand}" type="text" name="carBrand" placeholder="Введите марку автомобиля">
+            <!--CSRF Token-->
+            <input
+                    type="hidden"
+                    th:name="${_csrf.parameterName}"
+                    th:value="${_csrf.token}"/>
+            <button type="submit">Добавить</button>
+            <a href=""></a>
+        </form>
+    </div>
+
+    <div>
+        <ul>
+            <th:block th:each="car : ${cars}">
+                <li th:utext="${car.owner}">..</li>
+                <li th:utext="${car.carBrand}">..</li>
+                <li th:utext="${car.registrationNumber}">..</li>
+                <a href="/getRequestsByCar/" th:attrappend="href=${car.id}">История заказов</a>
+                <a th:href="@{/user/__${user.id}__/deleteCar/__${car.id}__}">Удалить машину</a>
+                <a th:href="@{/user/__${user.id}__/editCar/__${car.id}__}">Редактировать машину</a>
+                <p>-----------------------------------------</p>
+            </th:block>
+        </ul>
+    </div>
+
+    <div th:if="${user?.isAdmin()}">
+        <a th:href="@{/admin/getRequests}">Заказы</a>
+
+        <a th:href="@{/admin/getUsers}">Список пользователей</a>
+
+        <a th:href="@{/admin/getEmployees}">Список работников</a>
+        <a th:href="@{/admin/addEmployee}">Добавить работника</a>
+
+        <a th:href="@{/admin/getDetails}">Список деталей</a>
+        <a th:href="@{/admin/addDetail}">Добавить деталь</a>
+
+        <a th:href="@{/admin/getServices}">Список услуг</a>
+        <a th:href="@{/admin/addService}">Добавить услугу</a>
+
+        <a th:href="@{/admin/getServiceOrganizations}">Список сервисов</a>
+        <a th:href="@{/admin/addServiceOrganization}">Добавить сервис</a>
+    </div>
+
+    <div>
+        <div>
+            <form th:action="@{/user/__${user.id}__}" method="get" id="sortSelectForm">
+                <label>
+                    Сортировать:
+                    <select class="sorting" th:if="${not #lists.isEmpty(requestSortTypes)}" form="sortSelectForm"
+                            name="requestSortTypeOrd">
+                        <option th:each="requestSortType : ${requestSortTypes}"
+                                th:value="${requestSortType?.ordinal()}"
+                                th:text="${requestSortType?.sortName}"
+                                th:selected="${requestSortType == currentRequestSortType}">
+                        </option>
+                    </select>
+                </label>
+
+                <label>
+                    Статус заказа:
+                    <select class="sorting" th:if="${not #lists.isEmpty(requestStatuses)}" form="sortSelectForm"
+                            name="requestStatusOrd">
+                        <option value="all">Все</option>
+                        <option th:each="requestStatus : ${requestStatuses}"
+                                th:value="${requestStatus?.ordinal()}"
+                                th:text="${requestStatus?.value}"
+                                th:selected="${requestStatus == currentRequestStatus}">
+                        </option>
+                    </select>
+                </label>
+            </form>
+        </div>
+
+        <div>
+            <ul class="pagination mt-3">
+
+                <li th:if="${requestPage.getNumber()} == 0" class="page-item disabled">
+                    <a class="page-link" href="" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li th:if="${requestPage.getNumber()} != 0" class="page-item">
+                    <a class="page-link" th:href="@{__${url}__page=__${requestPage.getNumber() - 1}__}"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                <th:block th:each="p: ${pagesCount}">
+                    <li th:if="${requestPage.getNumber()} == ${p - 1}" class="page-item active">
+                        <a class="page-link" tabindex="-1" th:text="${p}">.</a>
+                    </li>
+
+                    <li th:if="${requestPage.getNumber()} != ${p - 1} and -1 != ${p}" class="page-item">
+                        <a class="page-link" th:href="@{__${url}__page=__${p - 1}__}" tabindex="-1" th:text="${p}">.</a>
+                    </li>
+
+                    <li th:if="-1 == ${p}" class="page-item disabled">
+                        <a class="page-link" tabindex="-1">...</a>
+                    </li>
+                </th:block>
+
+                <li th:if="${requestPage.getNumber()} == ${requestPage.getTotalPages() - 1}" class="page-item disabled">
+                    <a class="page-link" href="" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li th:if="${requestPage.getNumber()} != ${requestPage.getTotalPages() - 1}" class="page-item">
+                    <a class="page-link" th:href="@{__${url}__page=__${requestPage.getNumber() + 1}__}"
+                       aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <th:block th:each="request : ${requestPage}">
+            <div class="user-item">
+                <div class="user-info">
+
+                    <div class="user-info__item">
+                        <h4>Номер заказа</h4>
+                        <p th:text="${request.id}">.</p>
+                    </div>
+                    <div class="user-info__item">
+                        <h4>Автомобиль</h4>
+                        <p th:text="${request.car?.registrationNumber}">.</p>
+                    </div>
+                    <div class="user-info__item">
+                        <h4>Дата заказа</h4>
+                        <p th:text="${request.orderDate}">.</p>
+                    </div>
+                    <div class="user-info__item">
+                        <h4>Стоимость</h4>
+                        <p th:text="${request.cost}">.</p>
+                    </div>
+                    <div class="user-info__item">
+                        <h4>Статус</h4>
+                        <p th:text="${request.requestStatus.value}">.</p>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <a class="user-link" th:unless="${request.isRequestCancelled()}"
+                       th:href="@{/cancelRequest/__${request.id}__}">Отменить</a>
+                    <a class="user-link" th:href="@{/getRequest/__${request.id}__}">Просмотреть заказ</a>
+                    <a class="user-link" th:if="${authUser.isAdmin()}"
+                       th:href="@{/admin/deleteRequest/__${request.id}__}">Удалить
+                        заказ</a>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+    <div>
+        <ul class="pagination mt-3">
+
+            <li th:if="${requestPage.getNumber()} == 0" class="page-item disabled">
+                <a class="page-link" href="" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li th:if="${requestPage.getNumber()} != 0" class="page-item">
+                <a class="page-link" th:href="@{__${url}__page=__${requestPage.getNumber() - 1}__}"
+                   aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <th:block th:each="p: ${pagesCount}">
+                <li th:if="${requestPage.getNumber()} == ${p - 1}" class="page-item active">
+                    <a class="page-link" tabindex="-1" th:text="${p}">.</a>
+                </li>
+
+                <li th:if="${requestPage.getNumber()} != ${p - 1} and -1 != ${p}" class="page-item">
+                    <a class="page-link" th:href="@{__${url}__page=__${p - 1}__}" tabindex="-1" th:text="${p}">.</a>
+                </li>
+
+                <li th:if="-1 == ${p}" class="page-item disabled">
+                    <a class="page-link" tabindex="-1">...</a>
+                </li>
+            </th:block>
+
+            <li th:if="${requestPage.getNumber()} == ${requestPage.getTotalPages() - 1}" class="page-item disabled">
+                <a class="page-link" href="" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li th:if="${requestPage.getNumber()} != ${requestPage.getTotalPages() - 1}" class="page-item">
+                <a class="page-link" th:href="@{__${url}__page=__${requestPage.getNumber() + 1}__}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<script src="/js/userImageUpload.js"></script>
+<script src="/js/sortController.js"></script>
+</body>
+</html>

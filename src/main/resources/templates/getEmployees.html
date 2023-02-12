@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Пользователи</title>
+</head>
+<body>
+<div th:text="${message}">
+    {
+</div>
+
+<a href="/">Главная</a>
+<a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+<div>
+    <th:block th:each="employee : ${employees}">
+        <img th:src="@{/img/__${employee?.image}__}" alt="Отсутствует фото" width="50px" height="50px">
+        <p th:text="'ФИО: ' + ${employee.surname} + ' ' + ${employee.name} + ' ' + ${employee.patronymic}">.</p>
+        <p th:text="'Контактный телефон: ' + ${employee.phoneNumber}">.</p>
+        <p th:text="'Адрес: ' + ${employee.address}">.</p>
+        <p th:text="'Дата рождения: ' + ${employee.birthdate}">.</p>
+        <p th:text="'Должность: ' + ${employee.post.value}">.</p>
+        <p th:text="'Стаж работы: ' + ${employee.workExperience} + ' дней'">.</p>
+        <p th:text="'График работы: ' + ${employee.employeeWorkSchedule.value}">.</p>
+        <p th:text="'Оклад: ' + ${employee.salary}">.</p>
+        <p th:text="'Надбавка за стаж: ' + ${employee.seniorityAllowance}">.</p>
+        <p th:text="'Зарплата: ' + ${employee.wages}">.</p>
+        <p><a href="/admin/editEmployee/" th:attrappend="href=${employee.id}">Редактировать</a></p>
+        <p><a href="/admin/deleteEmployee/" th:attrappend="href=${employee.id}">Удалить работника</a></p>
+        <p>-------------------------------------------------</p>
+    </th:block>
+</div>
+</body>
+</html>

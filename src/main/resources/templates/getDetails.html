@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Пользователи</title>
+</head>
+<body>
+<div th:text="${message}">
+    {
+</div>
+<a href="/">Главная</a>
+<a href="/user/" th:attrappend="href=${user.id}">Личный кабинет</a>
+
+<ul>
+    <th:block th:each="detail : ${details}">
+
+        <li th:text="'Название детали: ' + ${detail?.name}">.</li>
+        <li th:text="'Количество деталей: ' + ${detail?.quantity}">.</li>
+        <li th:text="'Цена детали: ' + ${detail?.price}">.</li>
+        <li th:text="'Описание детали: ' + ${detail?.description}">.</li>
+        <li th:text="'Тип детали: ' + ${detail?.detailType.value}">.</li>
+        <div th:each="path : ${detail?.images}">
+            <img th:src="@{/img/__${path}__}" alt="Нажмите для выбора файла." width="50px" height="50px">
+        </div>
+        <li><a th:href="@{/admin/editDetail/__${detail?.id}__}">Редактировать</a></li>
+        <li><a href="/admin/deleteDetail/" th:attrappend="href=${detail?.id}">Удалить деталь</a></li>
+        <p>--------------------------------</p>
+
+    </th:block>
+</ul>
+
+</body>
+</html>
