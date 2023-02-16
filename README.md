@@ -75,12 +75,12 @@
 - [ ] Письма на почту
 - [ ] Сброс пароля
 
-<p align="right">(<a align="right"href="#readme-top">back to top</a>)</p>
+<p align="right">(<a align="right"href="#readme-top">Наверх</a>)</p>
 
 ## Веб-интерфейс
 
 
-<p align="right">(<a href="#Оглавление">back to top</a>)</p>
+<p align="right">(<a href="#Оглавление">Наверх</a>)</p>
 
 
 
